@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Інфо о ресторанах</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #FAFAFA;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .restaurant-card {
+            background-color: #FFE8D6;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: default;
+        }
+
+
+        .restaurant-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .restaurant-photo {
+            width: 100%;
+            max-height: 280px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            user-select: none;
+        }
+
+        h2 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            color: #333;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .menu, .reviews {
+            background-color: #fff8d5;
+            border-left: 6px solid #f0d770;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: inset 0 0 8px rgba(255, 220, 80, 0.2);
+        }
+
+        .menu h3, .reviews h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #aa7f00;
+            user-select: none;
+        }
+
+        .menu ul {
+            list-style: disc inside;
+            margin: 0;
+            padding-left: 10px;
+            color: #555;
+        }
+
+        .reviews p {
+            margin: 6px 0;
+            color: #444;
+        }
+
+        form textarea {
+            width: 100%;
+            min-height: 70px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1.5px solid #ddd;
+            font-size: 15px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        form textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
+        }
+
+        form button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        .more-info {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .more-info-btn {
+            display: inline-block;
+            padding: 10px 22px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            user-select: none;
+        }
+
+        .more-info-btn:hover {
+            background-color: #0056b3;
+            box-shadow: 0 4px 8px rgba(0, 86, 179, 0.5);
+        }
+
+    </style>
+</head>
+<body>
+</br>
+</br>
+</br>
+
+{% for restaurant in restaurants %}
+    <div class="container">
+        <div class="restaurant-card" style="background-color: {{ bg_color }};">
+            <div class="restaurant-info">
+                <img src="{{ restaurant.main_image }}" alt="Фото ресторана" class="restaurant-photo"/>
+                <h2>{{ restaurant.name }}</h2>
+                <h4>📍 {{ restaurant.city }}</h4>
+                <p>{{ restaurant.description }}</p>
+
+                <div class="menu">
+                    <h3>Меню:</h3>
+                    <ul>
+                        {% set items = restaurant.menu.split(';') %}
+                        {% for item in items[:4] %}
+                            <li>{{ item.strip() }}</li>
+                        {% endfor %}
+                        {% if items|length > 4 %}
+                            <li>...</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="more-info" style="margin-top: 10px;">
+                    <a href="{{ url_for('restaurant_detail', restaurant_id=restaurant.id) }}" class="more-info-btn">
+                        Дізнатися більше
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Підтвердження електронної пошти</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        h2 {
+            color: #333333;
+        }
+        p {
+            font-size: 16px;
+            color: #555555;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            margin-top: 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #999999;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Привіт, {{ name }}!</h2>
+        <p>Дякуємо за реєстрацію. Щоб підтвердити вашу електронну адресу, натисніть на кнопку нижче:</p>
+
+        <a href="{{ redirect_url }}" class="button">Підтвердити email</a>
+
+        <p>Якщо ви не реєструвалися, просто ігноруйте цей лист.</p>
+
+        <div class="footer">
+            © {{ current_year }} Ваша компанія. Усі права захищено.
+        </div>
+    </div>
+</body>
+</html>

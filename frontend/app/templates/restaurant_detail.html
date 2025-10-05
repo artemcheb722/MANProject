@@ -1,0 +1,235 @@
+{% extends "components/base.html" %}
+
+{% block content %}
+    <style>
+        body {
+            background-color: #FAFAFA;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 3rem auto 5rem auto;
+            padding: 0 15px;
+        }
+
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel-img {
+            max-height: 450px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .carousel-img:hover {
+            transform: scale(1.02);
+        }
+
+        .description-section {
+            background: #fff;
+            padding: 20px 25px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            color: #444;
+        }
+
+        .menu-section {
+            background-color: #fff8d5;
+            padding: 25px 30px;
+            border-radius: 14px;
+            margin-bottom: 40px;
+            border-left: 6px solid #ffefc5;
+            box-shadow: 0 4px 10px rgba(255, 238, 197, 0.4);
+        }
+
+        .menu-section h4 {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: #bb8f00;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 3px rgba(187, 143, 0, 0.2);
+        }
+
+        .menu-section ul {
+            list-style-type: disc;
+            padding-left: 1.2rem;
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .reviews {
+            background: #f9f9f9;
+            padding: 25px 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .reviews h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 1.3rem;
+            border-bottom: 3px solid #34495e;
+            padding-bottom: 8px;
+        }
+
+        .reviews ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .reviews ul li {
+            background: #fff;
+            margin-bottom: 12px;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .reviews ul li::before {
+            content: "❝";
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 2rem;
+            color: #bb8f00;
+            opacity: 0.3;
+            font-family: serif;
+        }
+
+
+        .reviews p {
+            font-style: italic;
+            color: #999;
+            font-size: 1.1rem;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .add-review {
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+            margin-top: 30px;
+        }
+
+        .add-review h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1E90FF;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid #1E90FF;
+            padding-bottom: 6px;
+        }
+    </style>
+
+    <div class="container">
+
+        <h1>{{ restaurant.name }}</h1>
+
+        <div id="carouselRestaurant" class="carousel slide mb-5" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for image in restaurant.images %}
+                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+                        <img src="{{ image }}" class="d-block w-100 carousel-img" alt="Фото ресторану">
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselRestaurant"
+                    data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselRestaurant"
+                    data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+
+        <div class="description-section">
+            <h3>Опис ресторану</h3>
+            <p>{{ restaurant.detailed_description }}</p>
+        </div>
+
+        <div class="menu-section">
+            <h4>Меню</h4>
+            <ul>
+                {% for item in restaurant.menu.split(';') %}
+                    <li>{{ item.strip() }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="reviews mb-5">
+            <h3>Коментарі</h3>
+
+            {% if comments %}
+                <ul>
+                    {% for comment in comments %}
+                        <li>
+                            &nbsp; &nbsp;<strong>{{ comment.author }}</strong>: {{ comment.text }}
+                            <br>
+                            <small class="text-muted">{{ comment.created_at|naturaltime }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">Коментарів ще немає.</p>
+            {% endif %}
+        </div>
+        {% if request.cookies.access_token %}
+            <div class="add-review mb-5">
+                <h3>Додати свій коментар</h3>
+                <form method="post" action="{{ url_for('add_comment', restaurant_id=restaurant.id) }}">
+                    <div class="mb-3">
+            <textarea name="comment_text" class="form-control" rows="4"
+                      placeholder="Напишіть свій коментар..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Надіслати</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="alert alert-warning mt-4">
+                Щоб залишати свої коментарі, будь ласка, <a href="{{ url_for('login') }}">увійдіть в акаунт</a>.
+            </div>
+        {% endif %}
+
+        <form method="post"
+              action="{% if is_favourite %}
+                {{ url_for('remove_from_favourite_route', restaurant_id=restaurant.id) }}
+              {% else %}
+                {{ url_for('add_to_favourite_route', restaurant_id=restaurant.id) }}
+              {% endif %}">
+            <button type="submit" class="btn btn-link p-0 border-0" style="background: none;">
+                {% if is_favourite %}
+                    <i class="fa-solid fa-heart text-danger fs-4"></i>
+                {% else %}
+                    <i class="fa-regular fa-heart text-secondary fs-4"></i>
+                {% endif %}
+            </button>
+        </form>
+        <a href="{{ url_for('index') }}" class="btn btn-primary shadow-sm rounded px-4 py-2 fw-semibold">
+            ⬅ Повернутися на головну
+        </a>
+
+
+    </div>
+{% endblock %}

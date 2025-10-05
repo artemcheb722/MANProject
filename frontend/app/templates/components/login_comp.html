@@ -1,0 +1,23 @@
+<style>
+    .custom-navbar .login-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 1rem;
+}
+</style>
+
+
+{% if user %}
+    <div class="d-flex align-items-center gap-2">
+  <span class="btn btn-light shadow-sm rounded-pill px-3 fw-semibold">
+    <i class="bi bi-person-circle me-1"></i> {{ user.name }}
+  </span>
+        <a href="{{ url_for('logout') }}" class="btn btn-warning rounded">Logout</a>
+    </div>
+{% else %}
+    <div class="login-section">
+        <a href="{{ url_for('login') }}" class="btn btn-success rounded">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-warning rounded">Register</a>
+    </div>
+{% endif %}
