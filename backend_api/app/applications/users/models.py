@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from sqlalchemy import JSON
-from sqlalchemy import String
+from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 from typing import List, Dict
@@ -23,6 +23,10 @@ class User(Base):
 
     is_admin: Mapped[bool] = mapped_column(default=False, nullable=True)
     is_verified: Mapped[bool] = mapped_column(default=False, nullable=True)
+    profile_description: Mapped[str] = mapped_column(Text, nullable=False)
+    user_avatar: Mapped[str] = mapped_column(nullable=False)
+    followers: Mapped[int] = mapped_column(default=0)
+    subscriptions: Mapped[int] = mapped_column(default=0)
 
     comments: Mapped[List[Dict]] = mapped_column(MutableList.as_mutable(JSON),default=list,nullable=True)
 
