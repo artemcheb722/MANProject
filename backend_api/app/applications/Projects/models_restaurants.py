@@ -23,7 +23,7 @@ class Project(ModelCommonMixin, Base):
     description: Mapped[str] = mapped_column(Text, nullable=False)
     technologies: Mapped[str] = mapped_column(Text, nullable=True)
     main_image: Mapped[str] = mapped_column(nullable=True)
-    images: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
+    images: Mapped[list[str]] = mapped_column(ARRAY(String), default=list, nullable=True)
     detailed_description: Mapped[str] = mapped_column(Text, nullable=True)
 
     comments_relation = relationship(
@@ -58,6 +58,6 @@ class UserProject(ModelCommonMixin, Base):
     technologies: Mapped[str] = mapped_column(Text, nullable=True)
     project_photo: Mapped[str] = mapped_column(nullable=True)
 
-    user = relationship("User", back_populates="projects")
+    # user = relationship("User", back_populates="projects")
 
 

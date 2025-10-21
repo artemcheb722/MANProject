@@ -4,34 +4,34 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import asc, desc, select, func, or_, and_
 import math
 
-from applications.Restaurants.schemas import SearchParamsSchema, SortEnum, SortByEnum, CommentCreate
+from applications.Projects.schemas import SearchParamsSchema, SortEnum, SortByEnum, CommentCreate
 
-from applications.Restaurants.models_restaurants import Restaurants, RestaurantComments
+from applications.Projects.models_restaurants import Project, ProjectComments
 
 
-async def create_restaurant_in_db(restaurant_uuid, name, city, description, menu, detailed_description, main_image, images, session) -> Restaurants:
-    new_restaurant = Restaurants(
-        uuid_data=restaurant_uuid,
-        name=name.strip(),
-        city=city.strip(),
+async def create_project_in_db(project_uuid, project_name, category, description, technologies, detailed_description, main_image, images, session) -> Project:
+    new_project = Project(
+        uuid_data=project_uuid,
+        project_name=project_name.strip(),
+        category=category.strip(),
         description=description.strip(),
-        menu=menu,
+        technologies=technologies.strip(),
         detailed_description=detailed_description,
         main_image=main_image,
         images=images,
     )
-    session.add(new_restaurant)
+    session.add(new_project)
     await session.commit()
-    return new_restaurant
+    return new_project
 
 
-async def get_restaurants_data(params: SearchParamsSchema, session: AsyncSession):
-    query = select(Restaurants)
-    count_query = select(func.count()).select_from(Restaurants)
+async def get_project_data(params: SearchParamsSchema, session: AsyncSession):
+    query = select(Project)
+    count_query = select(func.count()).select_from(Project)
 
     order_direction = asc if params.order_direction == SortEnum.ASC else desc
     if params.q:
-        search_fields = [Restaurants.name, Restaurants.description]
+        search_fields = [Project.project_name, Project.description]
         if params.use_sharp_q_filter:
             cleaned_query = params.q.strip().lower()
             search_condition = [func.lower(search_field) == cleaned_query for search_field in search_fields]
@@ -57,16 +57,16 @@ async def get_restaurants_data(params: SearchParamsSchema, session: AsyncSession
         'pages': math.ceil(total / params.limit)
     }
 
-async def get_restaurant_by_pk(pk: int, session: AsyncSession) -> Restaurants | None:
-    query = select(Restaurants).filter(Restaurants.id == pk)
+async def get_project_by_pk(pk: int, session: AsyncSession) -> Project | None:
+    query = select(Project).filter(Project.id == pk)
     result = await session.execute(query)
     return result.scalar_one_or_none()
 
 
-async def create_comment(user_id: int, restaurant_id: int, feedback: str, session: AsyncSession) -> RestaurantComments:
-    created_comment = RestaurantComments(
+async def create_comment(user_id: int, project_id: int, feedback: str, session: AsyncSession) -> ProjectComments:
+    created_comment = ProjectComments(
         user_id=user_id,
-        restaurant_id=restaurant_id,
+        project_id=project_id,
         feedback=feedback
     )
 

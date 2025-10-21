@@ -5,25 +5,29 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 from typing import Annotated, Optional
 
-class RestaurantSchema(BaseModel):
+class ProjectSchema(BaseModel):
     id: int
-    name: str
-    city: str
+    name: str =  Field(alias="project_name")
+    category: str
     description: str
-    menu: str
+    technologies: str
     detailed_description: str
     main_image: str
     images: list[str]
 
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+
 class CommentCreate(BaseModel):
-    restaurant_id: int
+    project_id: int
     text: str = Field(alias="feedback")
 
 
 class CommentResponse(BaseModel):
     id: int
     user_id: int
-    restaurant_id: int
+    project_id: int
     text: str
     created_at: datetime
     user_name: str
