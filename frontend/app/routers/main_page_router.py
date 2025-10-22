@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Form, Depends, status
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import  RedirectResponse
 
-from backend_api.api import get_current_user_with_token, login_user, get_restaurants, get_restaurant, get_user_info, get_restaurant_by_city
+from backend_api.api import get_current_user_with_token, login_user, get_projects, get_project, get_user_info, get_project_by_category
 import humanize
 from datetime import datetime
 from fastapi import HTTPException
@@ -18,22 +18,22 @@ templates = Jinja2Templates(directory='templates')
 @router.get('/')
 @router.post('/')
 async def index(request: Request,
-                city: str = Form(''),
+                category: str = Form(''),
                 query: str = Form(''),
                 user: dict = Depends(get_current_user_with_token)):
-    if city:
-        restaurants_response = await get_restaurant_by_city(city=city)
+    if category:
+        projects_response = await get_project_by_category(category=category)
     else:
-        restaurants_response = await get_restaurants(query)
+        projects_response = await get_projects(query)
 
 
-    restaurants = restaurants_response['items']
-    show_not_found = query and not restaurants
+    projects = projects_response['items']
+    show_not_found = query and not projects
 
     context = {
         'request': request,
-        'restaurants': restaurants,
-        'selected_city': city,
+        'restaurants': projects,
+        'selected_category': category,
         'query': query,
         'show_not_found': show_not_found
     }
@@ -62,18 +62,18 @@ templates.env.filters["naturaltime"] = naturaltime
 
 
 
-@router.get("/restaurants/{restaurant_id}")
+@router.get("/project/{project_id}")
 async def restaurant_detail(
     request: Request,
-    restaurant_id: int,
+    project_id: int,
 
 ):
-    restaurant = await  get_restaurant(restaurant_id)
-    comments = await get_all_comments(restaurant_id)
+    project = await  get_project(project_id)
+    comments = await get_all_comments(project_id)
 
     return templates.TemplateResponse("restaurant_detail.html", {
         "request": request,
-        "restaurant": restaurant,
+        "project": project,
         "comments": comments,
     })
 
@@ -141,41 +141,43 @@ async def remove_from_favourite(
 
 
 
-@router.get('/restaurants/{restaurant_id}')
-async def restaurant_detail(
+@router.get("/projects/{project_id}")
+async def project_detail(
     request: Request,
-    restaurant_id: int,
+    project_id: int,
     user: dict = Depends(get_current_user_with_token)
 ):
-    restaurant = await get_restaurant(restaurant_id)
+    # Получаем сам проект из БД или API
+    project = await get_project(project_id)
+    if not project:
+        return templates.TemplateResponse(
+            "error.html",
+            {"request": request, "message": "Проект не знайдено"}
+        )
 
+    # Получаем комментарии
+    comments = project.get("comments", [])
 
-    comments = []
-    if user.get("comments"):
-        comments = [
-            comment["text"]
-            for comment in user["comments"]
-            if comment.get("restaurant_id") == restaurant_id
-        ]
+    # Формируем контекст
     context = {
-        'request': request,
-        'restaurant': restaurant,
-        'comments': comments,
-        'user': user if user.get("name") else None,
-        'is_favourite': False
+        "request": request,
+        "project": project,
+        "comments": comments,
+        "user": user if user and user.get("name") else None,
+        "is_favourite": False,
     }
 
-
-    token = user.get("token")
+    # Проверяем, в избранном ли проект
+    token = user.get("token") if user else None
     if token:
         try:
-            context["is_favourite"] = await check_if_favourite(restaurant_id, token)
+            context["is_favourite"] = await check_if_favourite(project_id, token)
         except Exception as e:
             print(f"[ERROR is_favourite]: {e}")
             context["is_favourite"] = False
 
-    return templates.TemplateResponse('restaurant_detail.html', context=context)
-
+    # Возвращаем шаблон
+    return templates.TemplateResponse("restaurant_detail.html", context)
 
 @router.get('/login')
 @router.post('/login')

@@ -1,235 +1,485 @@
-{% extends "components/base.html" %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ project.name }} | Деталі Проєкту</title>
 
-{% block content %}
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        /* ==================================== */
+        /* === Спільні базові стилі (BASE) ==== */
+        /* ==================================== */
         body {
-            background-color: #FAFAFA;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
+            margin: 0;
+            font-family: "Inter", sans-serif;
+            background: #f7f8fa;
+            color: #222;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 3rem auto 5rem auto;
-            padding: 0 15px;
+        /* =================================== */
+        /* === Уніфікований ВЕРХНІЙ НАВБАР ==== */
+        /* =================================== */
+        .navbar {
+            width: 100%;
+            background: linear-gradient(90deg, #0078ff, #005fd4);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 40px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            height: 60px;
         }
 
-
-        h1 {
-            font-size: 3rem;
+        .nav-logo {
+            font-size: 24px;
             font-weight: 700;
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            color: white;
+            letter-spacing: 0.5px;
         }
 
-        .carousel-img {
-            max-height: 450px;
-            object-fit: cover;
-            border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s ease;
+        .nav-right {
+            display: flex;
+            gap: 30px;
         }
 
-        .carousel-img:hover {
-            transform: scale(1.02);
-        }
-
-        .description-section {
-            background: #fff;
-            padding: 20px 25px;
-            border-radius: 14px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
-            margin-bottom: 30px;
-            line-height: 1.6;
-            font-size: 1.1rem;
-            color: #444;
-        }
-
-        .menu-section {
-            background-color: #fff8d5;
-            padding: 25px 30px;
-            border-radius: 14px;
-            margin-bottom: 40px;
-            border-left: 6px solid #ffefc5;
-            box-shadow: 0 4px 10px rgba(255, 238, 197, 0.4);
-        }
-
-        .menu-section h4 {
-            font-weight: 700;
-            font-size: 1.8rem;
-            color: #bb8f00;
-            margin-bottom: 1rem;
-            text-shadow: 1px 1px 3px rgba(187, 143, 0, 0.2);
-        }
-
-        .menu-section ul {
-            list-style-type: disc;
-            padding-left: 1.2rem;
-            font-size: 1.1rem;
-            color: #555;
-        }
-
-        .reviews {
-            background: #f9f9f9;
-            padding: 25px 30px;
-            border-radius: 14px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .reviews h3 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #34495e;
-            margin-bottom: 1.3rem;
-            border-bottom: 3px solid #34495e;
-            padding-bottom: 8px;
-        }
-
-        .reviews ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-
-        .reviews ul li {
-            background: #fff;
-            margin-bottom: 12px;
-            padding: 15px 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
-            font-size: 1rem;
-            color: #555;
-            line-height: 1.4;
+        .nav-right a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            padding: 5px 0;
+            transition: 0.3s;
             position: relative;
         }
 
-        .reviews ul li::before {
-            content: "❝";
-            position: absolute;
-            top: 10px;
-            left: 15px;
-            font-size: 2rem;
-            color: #bb8f00;
-            opacity: 0.3;
-            font-family: serif;
+        .nav-right a:hover {
+            color: #ffeb3b;
+            text-shadow: 0 0 5px rgba(255, 235, 59, 0.4);
         }
 
+        .project-detail-container {
+            max-width: 1100px;
+            margin: 90px auto 50px;
+            padding: 0 20px;
+        }
 
-        .reviews p {
-            font-style: italic;
-            color: #999;
-            font-size: 1.1rem;
-            text-align: center;
-            padding: 20px 0;
+        .project-header {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .project-header h1 {
+            font-size: 36px;
+            color: #0078ff;
+            margin: 0;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 30px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .project-meta span {
+            display: block;
+        }
+
+        .project-meta strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .project-body {
+            display: flex;
+            gap: 30px;
+        }
+
+        .project-gallery {
+            flex: 2;
+        }
+
+        .carousel {
+            margin-bottom: 20px;
+        }
+
+        .carousel-img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .description-block {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .description-block h3 {
+            color: #0078ff;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .technologies, .category {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .technologies h4, .category h4 {
+            color: #0078ff;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .reviews {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .reviews h3 {
+            color: #0078ff;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .reviews ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .reviews li {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .reviews li:last-child {
+            border-bottom: none;
+        }
+
+        .text-muted {
+            color: #666;
+            font-size: 14px;
         }
 
         .add-review {
-            background: #fff;
-            padding: 25px 30px;
-            border-radius: 14px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
-            margin-top: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
         }
 
         .add-review h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #1E90FF;
-            margin-bottom: 1rem;
-            border-bottom: 3px solid #1E90FF;
-            padding-bottom: 6px;
+            color: #0078ff;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-family: "Inter", sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #43a047;
+        }
+
+        .btn-primary {
+            background: #0078ff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #005fd4;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-warning {
+            background: #fff8e1;
+            border: 1px solid #ffd54f;
+            color: #856404;
+        }
+
+        .favourite-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .project-sidebar {
+            flex: 1;
+        }
+
+        .author-info {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .author-info img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #0078ff;
+            margin-bottom: 10px;
+        }
+
+        .author-info h4 {
+            margin: 5px 0 15px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .cta-btn {
+            background: #0078ff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+            transition: background 0.2s, transform 0.2s;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .cta-btn:hover {
+            background: #005fd4;
+            transform: translateY(-1px);
+        }
+
+        /* Адаптивність */
+        @media (max-width: 900px) {
+            .navbar {
+                padding: 10px 15px;
+                height: 50px;
+            }
+            .nav-logo {
+                font-size: 20px;
+            }
+            .nav-right {
+                gap: 15px;
+            }
+            .nav-right a {
+                font-size: 14px;
+            }
+
+            .project-detail-container {
+                padding: 0 15px;
+                margin-top: 70px;
+            }
+
+            .project-header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 20px;
+            }
+
+            .project-header h1 {
+                font-size: 28px;
+                margin-bottom: 15px;
+            }
+
+            .project-meta {
+                gap: 20px;
+                font-size: 12px;
+            }
+
+            .project-body {
+                flex-direction: column;
+            }
+
+            .carousel-img {
+                height: 300px;
+            }
         }
     </style>
+</head>
+<body>
 
-    <div class="container">
 
-        <h1>{{ restaurant.name }}</h1>
+<main class="project-detail-container">
+    <!-- Кнопка назад -->
+    <a href="{{ url_for('index') }}" class="btn btn-primary" style="margin-bottom: 20px;">
+        ⬅ Повернутися на головну
+    </a>
 
-        <div id="carouselRestaurant" class="carousel slide mb-5" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                {% for image in restaurant.images %}
-                    <div class="carousel-item {% if loop.first %}active{% endif %}">
-                        <img src="{{ image }}" class="d-block w-100 carousel-img" alt="Фото ресторану">
-                    </div>
-                {% endfor %}
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselRestaurant"
-                    data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselRestaurant"
-                    data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
-            </button>
+    <div class="project-header">
+        <h1>{{ project.name }}</h1>
+        <div class="project-meta">
+            <span><strong>Категорія:</strong> {{ project.category }}</span>
         </div>
-
-        <div class="description-section">
-            <h3>Опис ресторану</h3>
-            <p>{{ restaurant.detailed_description }}</p>
-        </div>
-
-        <div class="menu-section">
-            <h4>Меню</h4>
-            <ul>
-                {% for item in restaurant.menu.split(';') %}
-                    <li>{{ item.strip() }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="reviews mb-5">
-            <h3>Коментарі</h3>
-
-            {% if comments %}
-                <ul>
-                    {% for comment in comments %}
-                        <li>
-                            &nbsp; &nbsp;<strong>{{ comment.author }}</strong>: {{ comment.text }}
-                            <br>
-                            <small class="text-muted">{{ comment.created_at|naturaltime }}</small>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-muted">Коментарів ще немає.</p>
-            {% endif %}
-        </div>
-        {% if request.cookies.access_token %}
-            <div class="add-review mb-5">
-                <h3>Додати свій коментар</h3>
-                <form method="post" action="{{ url_for('add_comment', restaurant_id=restaurant.id) }}">
-                    <div class="mb-3">
-            <textarea name="comment_text" class="form-control" rows="4"
-                      placeholder="Напишіть свій коментар..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-success">Надіслати</button>
-                </form>
-            </div>
-        {% else %}
-            <div class="alert alert-warning mt-4">
-                Щоб залишати свої коментарі, будь ласка, <a href="{{ url_for('login') }}">увійдіть в акаунт</a>.
-            </div>
-        {% endif %}
-
-        <form method="post"
-              action="{% if is_favourite %}
-                {{ url_for('remove_from_favourite_route', restaurant_id=restaurant.id) }}
-              {% else %}
-                {{ url_for('add_to_favourite_route', restaurant_id=restaurant.id) }}
-              {% endif %}">
-            <button type="submit" class="btn btn-link p-0 border-0" style="background: none;">
-                {% if is_favourite %}
-                    <i class="fa-solid fa-heart text-danger fs-4"></i>
-                {% else %}
-                    <i class="fa-regular fa-heart text-secondary fs-4"></i>
-                {% endif %}
-            </button>
-        </form>
-        <a href="{{ url_for('index') }}" class="btn btn-primary shadow-sm rounded px-4 py-2 fw-semibold">
-            ⬅ Повернутися на головну
-        </a>
-
-
     </div>
-{% endblock %}
+
+    <div class="project-body">
+        <div class="project-gallery">
+            <!-- ФОТО СЛАЙДЕР -->
+            {% if project.images and project.images|length > 0 %}
+            <div class="carousel">
+                {% for image in project.images %}
+                    <img src="{{ image }}" class="carousel-img" alt="Фото проекту">
+                {% endfor %}
+            </div>
+            {% else %}
+            <img src="{{ project.main_image }}" class="carousel-img" alt="Фото проекту">
+            {% endif %}
+
+            <!-- ОПИСАНИЕ -->
+            <section class="description-block">
+                <h3>Опис проєкту</h3>
+                <p>{{ project.detailed_description }}</p>
+            </section>
+
+            <!-- ТЕХНОЛОГИИ -->
+            <section class="technologies">
+                <h4>Технології</h4>
+                <p>{{ project.technologies }}</p>
+            </section>
+
+            <!-- КАТЕГОРИЯ -->
+            <section class="category">
+                <h4>Категорія</h4>
+                <p>{{ project.category }}</p>
+            </section>
+
+            <!-- КОММЕНТАРИИ -->
+            <section class="reviews">
+                <h3>Коментарі</h3>
+
+                {% if comments %}
+                    <ul>
+                        {% for comment in comments %}
+                            <li>
+                                <strong>{{ comment.user_name }}</strong>: {{ comment.text }}
+                                <br>
+                                <small class="text-muted">{{ comment.created_at }}</small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">Коментарів ще немає.</p>
+                {% endif %}
+            </section>
+
+            <!-- ДОБАВИТЬ КОММЕНТАРИЙ -->
+            {% if user %}
+                <section class="add-review">
+                    <h3>Додати свій коментар</h3>
+                    <form method="post" action="{{ url_for('add_comment', project_id=project.id) }}">
+                        <div style="margin-bottom: 15px;">
+                            <textarea name="comment_text" class="form-control" rows="4"
+                                      placeholder="Напишіть свій коментар..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">Надіслати</button>
+                    </form>
+                </section>
+            {% else %}
+                <div class="alert alert-warning">
+                    Щоб залишати свої коментарі, будь ласка, <a href="{{ url_for('login') }}">увійдіть в акаунт</a>.
+                </div>
+            {% endif %}
+
+            <!-- ИЗБРАННОЕ -->
+            <form method="post"
+                  action="{% if is_favourite %}
+                        {{ url_for('remove_from_favourite_route', restaurant_id=project.id) }}
+                      {% else %}
+                        {{ url_for('add_to_favourite_route', restaurant_id=project.id) }}
+                      {% endif %}">
+                <button type="submit" class="favourite-btn">
+                    {% if is_favourite %}
+                        ❤️
+                    {% else %}
+                        🤍
+                    {% endif %}
+                </button>
+            </form>
+        </div>
+
+        <aside class="project-sidebar">
+            <!-- Блок автора (можете адаптировать под ваши данные) -->
+            <div class="author-info">
+                <img src="/images/Без%20названия.png" alt="Аватар Автора">
+                <h4>Автор проєкту</h4>
+                <p style="font-size: 14px; color: #777;">Інформація про автора</p>
+                <a href="#user_profile.html" class="cta-btn">Профіль Автора</a>
+                <a href="mailto:author@example.com" class="cta-btn" style="background: #4caf50;">Зв'язатися</a>
+            </div>
+
+            <!-- Дополнительная информация -->
+            <section class="description-block">
+                <h3>Додаткова інформація</h3>
+                <p style="font-size: 14px;">Тут може бути додаткова інформація про проєкт, завантаження чи інші деталі.</p>
+            </section>
+        </aside>
+    </div>
+</main>
+
+</body>
+</html>

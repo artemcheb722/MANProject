@@ -47,27 +47,27 @@ async def get_current_user_with_token(request: Request) -> dict:
     return user
 
 
-async def get_restaurants(q: str = ""):
+async def get_projects(q: str = ""):
     async with httpx.AsyncClient() as client:
         response = await client.get(
-            url=f'{settings.BACKEND_API}/restaurants/',
+            url=f'{settings.BACKEND_API}/projects/',
             params={"q": q}
 
         )
         return response.json()
 
-async def get_restaurant(pk: int):
+async def get_project(pk: int):
     async with httpx.AsyncClient() as client:
         response = await client.get(
-            url=f'{settings.BACKEND_API}/restaurants/{pk}',
+            url=f'{settings.BACKEND_API}/projects/{pk}',
         )
         return response.json()
 
-async def get_restaurant_by_city(city: str = ""):
+async def get_project_by_category(category: str = ""):
     async with httpx.AsyncClient() as client:
         response = await client.get(
-            url=f'{settings.BACKEND_API}/restaurants/by_city',
-            params={"city": city}
+            url=f'{settings.BACKEND_API}/projects/by_category',
+            params={"category": category}
 
         )
         return response.json()
