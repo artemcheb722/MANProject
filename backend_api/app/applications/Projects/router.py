@@ -20,7 +20,7 @@ router_projects = APIRouter()
 @router_projects.post("/create",
                       # dependencies=[Depends(admin_required)]
                       )
-async def create_restaurant(
+async def create_project(
         main_image: UploadFile,
         images: list[UploadFile] = None,
         name: str = Form(..., max_length=50),
@@ -38,24 +38,24 @@ async def create_restaurant(
         url = await s3_storage.upload_product_image(image, restaurant_uuid=project_uuid)
         images_urls.append(url)
 
-    created_restaurant = await  create_project_in_db(project_uuid=project_uuid, project_name=name, category=category,
+    created_project = await  create_project_in_db(project_uuid=project_uuid, project_name=name, category=category,
                                                      description=description, technologies=technologies,
                                                      detailed_description=detailed_description,
                                                      main_image=main_image, images=images_urls,
                                                      session=session)
 
-    return created_restaurant
+    return created_project
 
 
-@router_projects.get('/by_city')
-async def get_restaurants_by_city(city: str, session: AsyncSession = Depends(get_async_session)):
+@router_projects.get('/by_category')
+async def get_projects_by_category(category: str, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(
-        select(Project).where(Project.city == city)
+        select(Project).where(Project.category == category)
     )
-    restaurants = result.scalars().all()
+    projects = result.scalars().all()
     return {
-        "items": restaurants,
-        "total": len(restaurants),
+        "items": projects,
+        "total": len(projects),
     }
 
 
@@ -68,7 +68,7 @@ async def get_product(pk: int, session: AsyncSession = Depends(get_async_session
 
 
 @router_projects.get('/')
-async def get_restaurants(params: Annotated[SearchParamsSchema, Depends()],
+async def get_projects(params: Annotated[SearchParamsSchema, Depends()],
                           session: AsyncSession = Depends(get_async_session)):
     result = await get_project_data(params, session)
     return result
