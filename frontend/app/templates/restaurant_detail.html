@@ -365,7 +365,7 @@
 
 
 <main class="project-detail-container">
-    <!-- Кнопка назад -->
+
     <a href="{{ url_for('index') }}" class="btn btn-primary" style="margin-bottom: 20px;">
         ⬅ Повернутися на головну
     </a>
@@ -379,7 +379,7 @@
 
     <div class="project-body">
         <div class="project-gallery">
-            <!-- ФОТО СЛАЙДЕР -->
+
             {% if project.images and project.images|length > 0 %}
             <div class="carousel">
                 {% for image in project.images %}
@@ -390,25 +390,24 @@
             <img src="{{ project.main_image }}" class="carousel-img" alt="Фото проекту">
             {% endif %}
 
-            <!-- ОПИСАНИЕ -->
+
             <section class="description-block">
                 <h3>Опис проєкту</h3>
                 <p>{{ project.detailed_description }}</p>
             </section>
 
-            <!-- ТЕХНОЛОГИИ -->
+
             <section class="technologies">
                 <h4>Технології</h4>
                 <p>{{ project.technologies }}</p>
             </section>
 
-            <!-- КАТЕГОРИЯ -->
+
             <section class="category">
                 <h4>Категорія</h4>
                 <p>{{ project.category }}</p>
             </section>
 
-            <!-- КОММЕНТАРИИ -->
             <section class="reviews">
                 <h3>Коментарі</h3>
 

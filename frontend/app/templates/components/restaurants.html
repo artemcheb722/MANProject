@@ -294,7 +294,7 @@
                     <img src="{{ project.main_image }}" alt="{{ project.project_name }}">
                     <div class="project-info">
                         <h4>{{ project.project_name }}</h4>
-                        <p>📍 {{ project.category }}</p>
+                        <p>Категорія: {{ project.category }}</p>
                         <p>{{ project.description }}</p>
                         <a href="{{ url_for('restaurant_detail', project_id=project.id) }}" class="view-btn">Дізнатися
                             більше</a>
