@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field, ValidationInfo, model_validator
+from typing import Optional
 
 
 class NewComment(BaseModel):
@@ -32,3 +33,16 @@ class RegisterUserFields(BaseFields, PasswordField):
 
 class BaseUserInfo(BaseFields):
     id: int
+
+class UserSchema(BaseModel):
+    id: int
+    name: str
+    email: str
+    followers: int
+    profile_description: Optional[str] = None
+    subscriptions: int
+
+class UserUpdateProfile(BaseModel):
+    name: Optional[str] = None
+    profile_description: Optional[str] = None
+    email: Optional[str] = None

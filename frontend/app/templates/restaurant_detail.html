@@ -8,9 +8,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        /* ==================================== */
-        /* === Спільні базові стилі (BASE) ==== */
-        /* ==================================== */
         body {
             margin: 0;
             font-family: "Inter", sans-serif;
@@ -18,9 +15,7 @@
             color: #222;
         }
 
-        /* =================================== */
-        /* === Уніфікований ВЕРХНІЙ НАВБАР ==== */
-        /* =================================== */
+
         .navbar {
             width: 100%;
             background: linear-gradient(90deg, #0078ff, #005fd4);
@@ -320,12 +315,15 @@
                 padding: 10px 15px;
                 height: 50px;
             }
+
             .nav-logo {
                 font-size: 20px;
             }
+
             .nav-right {
                 gap: 15px;
             }
+
             .nav-right a {
                 font-size: 14px;
             }
@@ -381,13 +379,13 @@
         <div class="project-gallery">
 
             {% if project.images and project.images|length > 0 %}
-            <div class="carousel">
-                {% for image in project.images %}
-                    <img src="{{ image }}" class="carousel-img" alt="Фото проекту">
-                {% endfor %}
-            </div>
+                <div class="carousel">
+                    {% for image in project.images %}
+                        <img src="{{ image }}" class="carousel-img" alt="Фото проекту">
+                    {% endfor %}
+                </div>
             {% else %}
-            <img src="{{ project.main_image }}" class="carousel-img" alt="Фото проекту">
+                <img src="{{ project.main_image }}" class="carousel-img" alt="Фото проекту">
             {% endif %}
 
 
@@ -408,43 +406,42 @@
                 <p>{{ project.category }}</p>
             </section>
 
-            <section class="reviews">
+            <div class="reviews mb-5">
                 <h3>Коментарі</h3>
 
                 {% if comments %}
                     <ul>
                         {% for comment in comments %}
                             <li>
-                                <strong>{{ comment.user_name }}</strong>: {{ comment.text }}
+                                &nbsp; &nbsp;<strong>{{ comment.author }}</strong>: {{ comment.text }}
                                 <br>
-                                <small class="text-muted">{{ comment.created_at }}</small>
+                                <small class="text-muted">{{ comment.created_at|naturaltime }}</small>
                             </li>
                         {% endfor %}
                     </ul>
                 {% else %}
                     <p class="text-muted">Коментарів ще немає.</p>
                 {% endif %}
-            </section>
-
-            <!-- ДОБАВИТЬ КОММЕНТАРИЙ -->
-            {% if user %}
-                <section class="add-review">
+            </div>
+            {% if request.cookies.access_token %}
+                <div class="add-review mb-5">
                     <h3>Додати свій коментар</h3>
                     <form method="post" action="{{ url_for('add_comment', project_id=project.id) }}">
-                        <div style="margin-bottom: 15px;">
-                            <textarea name="comment_text" class="form-control" rows="4"
-                                      placeholder="Напишіть свій коментар..." required></textarea>
+                        <div class="mb-3">
+            <textarea name="comment_text" class="form-control" rows="4"
+                      placeholder="Напишіть свій коментар..." required></textarea>
                         </div>
                         <button type="submit" class="btn btn-success">Надіслати</button>
                     </form>
-                </section>
+                </div>
             {% else %}
-                <div class="alert alert-warning">
+                <div class="alert alert-warning mt-4">
                     Щоб залишати свої коментарі, будь ласка, <a href="{{ url_for('login') }}">увійдіть в акаунт</a>.
                 </div>
             {% endif %}
 
-            <!-- ИЗБРАННОЕ -->
+
+
             <form method="post"
                   action="{% if is_favourite %}
                         {{ url_for('remove_from_favourite_route', restaurant_id=project.id) }}
@@ -462,7 +459,7 @@
         </div>
 
         <aside class="project-sidebar">
-            <!-- Блок автора (можете адаптировать под ваши данные) -->
+
             <div class="author-info">
                 <img src="/images/Без%20названия.png" alt="Аватар Автора">
                 <h4>Автор проєкту</h4>
@@ -471,10 +468,10 @@
                 <a href="mailto:author@example.com" class="cta-btn" style="background: #4caf50;">Зв'язатися</a>
             </div>
 
-            <!-- Дополнительная информация -->
             <section class="description-block">
                 <h3>Додаткова інформація</h3>
-                <p style="font-size: 14px;">Тут може бути додаткова інформація про проєкт, завантаження чи інші деталі.</p>
+                <p style="font-size: 14px;">Тут може бути додаткова інформація про проєкт, завантаження чи інші
+                    деталі.</p>
             </section>
         </aside>
     </div>

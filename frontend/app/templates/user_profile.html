@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Мій акаунт | MAN Projects</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+    <style>
+        main.profile-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 120px;
+            padding-bottom: 60px;
+        }
+
+        .user-info {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+            padding: 40px 60px;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            max-width: 850px;
+            width: 90%;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .avatar {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #0078ff;
+            box-shadow: 0 0 15px rgba(0, 120, 255, 0.3);
+            transition: 0.3s;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 120, 255, 0.4);
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        .info h2 {
+            margin: 0 0 10px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #0078ff;
+        }
+
+        .bio {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stats div {
+            background: #f7f9fc;
+            border-radius: 12px;
+            padding: 12px 20px;
+            flex: 1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: 0.3s;
+        }
+
+        .stats div:hover {
+            background: #0078ff;
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 120, 255, 0.3);
+        }
+
+        body {
+            margin: 0;
+            font-family: "Inter", sans-serif;
+            background: #f7f8fa;
+            color: #222;
+        }
+
+
+        .navbar {
+            width: 100%;
+            background: linear-gradient(90deg, #0078ff, #005fd4);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 40px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            height: 60px;
+        }
+
+        .nav-logo {
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-right a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            padding: 5px 0;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-right a:hover {
+            color: #ffeb3b;
+            text-shadow: 0 0 5px rgba(255, 235, 59, 0.4);
+        }
+
+        .stats strong {
+            font-size: 22px;
+            display: block;
+        }
+
+        .stats span {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .add-project-btn {
+            background: linear-gradient(135deg, #0078ff, #005fd4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(0, 120, 255, 0.3);
+        }
+
+        .add-project-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 120, 255, 0.4);
+        }
+
+        /* Стили для модального окна */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .add-project-modal {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .modal-title {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 24px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e1e5eb;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background-color: #f9fafb;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4a6cf7;
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+            background-color: white;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #e1e5eb;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn-save {
+            background-color: #4a6cf7;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background-color: #3a5ce5;
+            box-shadow: 0 4px 12px rgba(74, 108, 247, 0.3);
+        }
+
+        .category-select {
+            position: relative;
+        }
+
+        .category-select::after {
+            content: "▼";
+            font-size: 12px;
+            color: #6c757d;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .form-group select {
+            appearance: none;
+            cursor: pointer;
+        }
+
+        @media (max-width: 480px) {
+            .add-project-modal {
+                padding: 20px;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+            }
+
+            .modal-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+                padding: 30px 20px;
+            }
+
+            .avatar {
+                width: 120px;
+                height: 120px;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+
+        .file-upload-section {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .file-upload-section:hover {
+            border-color: #3498db;
+        }
+
+        .file-upload-section.drag-over {
+            border-color: #3498db;
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .file-upload-icon {
+            font-size: 40px;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-text {
+            margin-bottom: 15px;
+            color: #7f8c8d;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-upload-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .file-upload-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-item.main {
+            border: 2px solid #3498db;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+        }
+
+        .preview-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 3px 6px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+
+        .preview-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .preview-label {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #3498db;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .preview-item {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+{% include 'components/navbar.html' %}
+
+<main class="profile-container">
+    <section class="user-info">
+        <img src="{{ user.avatar or url_for('static', path='images/Default.png') }}"
+             alt="Avatar" class="avatar">
+
+        <div class="info">
+            <h2>{{ user.name }}</h2>
+
+            <p class="bio">
+                {{ user.profile_description or "Користувач ще не додав опис профілю." }}
+            </p>
+
+            <button class="add-project-btn" id="openModalBtn">+ Додати проєкт</button>
+
+            <a href={{ url_for('settings_page') }} style="display: block; margin-top: 10px;">Налаштування</a>
+
+            <div class="stats">
+                <div>
+                    <strong>{{ user.projects_count or 0 }}</strong>
+                    <span>Проєктів</span>
+                </div>
+                <div>
+                    <strong>{{ user.followers or 0 }}</strong>
+                    <span>Підписників</span>
+                </div>
+                <div>
+                    <strong>{{ user.following or 0 }}</strong>
+                    <span>Підписки</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="add-project-modal">
+        <button class="close-btn" id="closeModalBtn">&times;</button>
+        <h3 class="modal-title">Додати свій проєкт</h3>
+
+        <form id="editForm" method="post">
+            <div class="form-group">
+                <label for="projectName">Назва проєкту:</label>
+                <input type="text" id="projectName" placeholder="Введіть назву проєкту">
+            </div>
+
+            <div class="form-group category-select">
+                <label for="projectCategory">Категорія</label>
+                <select id="projectCategory">
+                    <option value="" disabled selected>Оберіть категорію</option>
+                    <option value="3d">3D</option>
+                    <option value="programs">Програми</option>
+                    <option value="design">Дизайн</option>
+                    <option value="architecture">Архітектура</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="shortDescription">Короткий опис проєкту:</label>
+                <textarea id="shortDescription" placeholder="Коротко опишіть ваш проєкт"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="technologies">Технології, що використовувались:</label>
+                <textarea id="technologies" placeholder="Перелічіть технології, які ви використовували"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="detailedDescription">Докладний опис:</label>
+                <textarea id="detailedDescription" placeholder="Детально розкажіть про ваш проєкт"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Головне фото проєкту:</label>
+                <div class="file-upload-section" id="mainPhotoUpload">
+                    <div class="file-upload-icon">📷</div>
+                    <p class="file-upload-text">Перетягніть головне фото сюди або натисніть для вибору</p>
+                    <button type="button" class="file-upload-btn" id="mainPhotoBtn">Обрати файл</button>
+                    <input type="file" id="mainPhotoInput" class="file-input" accept="image/*">
+                </div>
+                <div class="preview-container" id="mainPhotoPreview"></div>
+            </div>
+
+            <!-- Загрузка дополнительных фото -->
+            <div class="form-group">
+                <label>Додаткові фото проєкту:</label>
+                <div class="file-upload-section" id="additionalPhotosUpload">
+                    <div class="file-upload-icon">🖼️</div>
+                    <p class="file-upload-text">Перетягніть додаткові фото сюди або натисніть для вибору</p>
+                    <button type="button" class="file-upload-btn" id="additionalPhotosBtn">Обрати файли</button>
+                    <input type="file" id="additionalPhotosInput" class="file-input" accept="image/*" multiple>
+                </div>
+                <div class="preview-container" id="additionalPhotosPreview"></div>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="modal-btn btn-cancel" id="cancelBtn">Скасувати</button>
+                <button type="submit" class="modal-btn btn-save">Зберегти</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const openModalBtn = document.getElementById('openModalBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const editForm = document.getElementById('editForm');
+
+
+    openModalBtn.addEventListener('click', function () {
+        modalOverlay.classList.add('active');
+    });
+
+
+    function closeModal() {
+        modalOverlay.classList.remove('active');
+    }
+
+
+    closeModalBtn.addEventListener('click', closeModal);
+
+    cancelBtn.addEventListener('click', function () {
+        if (confirm('Ви впевнені, що хочете скасувати?')) {
+            closeModal();
+            console.log('Форма скасована');
+        }
+    });
+
+
+    modalOverlay.addEventListener('click', function (e) {
+        if (e.target === modalOverlay) {
+            closeModal();
+        }
+    });
+
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+
+    editForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        alert('Проєкт успішно збережено!');
+        closeModal();
+
+    });
+</script>
+
+</body>
+</html>

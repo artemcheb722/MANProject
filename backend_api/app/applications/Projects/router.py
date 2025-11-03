@@ -39,10 +39,10 @@ async def create_project(
         images_urls.append(url)
 
     created_project = await  create_project_in_db(project_uuid=project_uuid, project_name=name, category=category,
-                                                     description=description, technologies=technologies,
-                                                     detailed_description=detailed_description,
-                                                     main_image=main_image, images=images_urls,
-                                                     session=session)
+                                                  description=description, technologies=technologies,
+                                                  detailed_description=detailed_description,
+                                                  main_image=main_image, images=images_urls,
+                                                  session=session)
 
     return created_project
 
@@ -69,7 +69,7 @@ async def get_product(pk: int, session: AsyncSession = Depends(get_async_session
 
 @router_projects.get('/')
 async def get_projects(params: Annotated[SearchParamsSchema, Depends()],
-                          session: AsyncSession = Depends(get_async_session)):
+                       session: AsyncSession = Depends(get_async_session)):
     result = await get_project_data(params, session)
     return result
 
@@ -80,13 +80,13 @@ async def post_comments(
         user: User = Depends(get_current_user),
         session: AsyncSession = Depends(get_async_session)
 ):
-    restaurant = await get_project_by_pk(feedback.restaurant_id, session)
-    if not restaurant:
+    project = await get_project_by_pk(feedback.project_id, session)
+    if not project:
         raise HTTPException(status_code=404, detail="Ресторан не знайдено")
 
     comment = await create_comment(
         user_id=user.id,
-        restaurant_id=feedback.restaurant_id,
+        project_id=feedback.project_id,
         feedback=feedback.text,
         session=session
     )
@@ -94,28 +94,29 @@ async def post_comments(
     return CommentResponse(
         id=comment.id,
         user_id=comment.user_id,
-        restaurant_id=comment.restaurant_id,
+        project_id=comment.project_id,
         text=comment.feedback,
         user_name=user.name,
-        created_comment=comment.created_at
+        created_at=comment.created_at
     )
 
 
-@router_projects.get("/comments/{restaurant_id}")
+@router_projects.get("/comments/{project_id}")
 async def get_comments_for_restaurant(
-        restaurant_id: int,
+        project_id: int,
         session: AsyncSession = Depends(get_async_session)
 ):
     stmt = (
         select(ProjectComments, User.name)
         .join(User, User.id == ProjectComments.user_id)
-        .where(ProjectComments.restaurant_id == restaurant_id)
+        .where(ProjectComments.project_id == project_id)
     )
     result = await session.execute(stmt)
     feedbacks_with_users = result.all()
 
     return [
         {
+            "status": 200,
             "text": comment.feedback,
             "author": name,
             "created_at": comment.created_at

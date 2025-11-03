@@ -10,9 +10,7 @@
 
 {% if user %}
     <div class="d-flex align-items-center gap-2">
-  <span class="btn btn-light shadow-sm rounded-pill px-3 fw-semibold">
-    <i class="bi bi-person-circle me-1"></i> {{ user.name }}
-  </span>
+
         <a href="{{ url_for('logout') }}" class="btn btn-warning rounded">Logout</a>
     </div>
 {% else %}

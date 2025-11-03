@@ -1,18 +1,19 @@
 from fastapi import APIRouter, Request, Form, Depends, status
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import  RedirectResponse
+from fastapi.responses import RedirectResponse
 
-from backend_api.api import get_current_user_with_token, login_user, get_projects, get_project, get_user_info, get_project_by_category
+from backend_api.api import get_current_user_with_token, login_user, get_projects, get_project, get_user_info, \
+    get_project_by_category, get_users_info_for_account, edit_users_profile
 import humanize
 from datetime import datetime
+from fastapi.responses import HTMLResponse
 from fastapi import HTTPException
-from backend_api.api import register_user, send_comment, get_all_comments, create_comment, add_to_favourite, remove_from_favourite, check_if_favourite
+from backend_api.api import register_user, send_comment, get_all_comments, create_comment, add_to_favourite, \
+    remove_from_favourite, check_if_favourite
 
 router = APIRouter()
 
 templates = Jinja2Templates(directory='templates')
-
-
 
 
 @router.get('/')
@@ -25,7 +26,6 @@ async def index(request: Request,
         projects_response = await get_project_by_category(category=category)
     else:
         projects_response = await get_projects(query)
-
 
     projects = projects_response['items']
     show_not_found = query and not projects
@@ -44,7 +44,6 @@ async def index(request: Request,
     return templates.TemplateResponse('index.html', context=context)
 
 
-
 @router.post('/favourite_restaurants')
 async def favourite_restaurants():
     return templates.TemplateResponse('favourite_restaurants.html')
@@ -58,12 +57,67 @@ def naturaltime(value):
             return value
     return humanize.naturaltime(datetime.utcnow() - value)
 
-templates.env.filters["naturaltime"] = naturaltime
 
+templates.env.filters["naturaltime"] = naturaltime
 
 
 @router.get("/project/{project_id}")
 async def restaurant_detail(
+        request: Request,
+        project_id: int,
+
+):
+    project = await  get_project(project_id)
+    comments = await get_all_comments(project_id)
+
+    return templates.TemplateResponse("restaurant_detail.html", {
+        "request": request,
+        "project": project,
+        "comments": comments,
+    })
+
+
+@router.post("/project/{project_id}/add_comment")
+async def add_comment(
+        request: Request,
+        project_id: int,
+        comment_text: str = Form(...),
+):
+    token = request.cookies.get("access_token")
+
+    if not token:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    await create_comment(
+        project_id=project_id,
+        feedback=comment_text,
+        token=token
+    )
+
+    return RedirectResponse(
+        url=request.url_for("restaurant_detail", project_id=project_id),
+        status_code=status.HTTP_303_SEE_OTHER
+    )
+
+
+@router.post("/restaurants/favourite/{restaurant_id}/add")
+async def add_to_favourite_route(
+        request: Request,
+        restaurant_id: int,
+):
+    token = request.cookies.get("access_token")
+    if not token:
+        return RedirectResponse(url=request.url_for("login"), status_code=303)
+
+    await add_to_favourite(restaurant_id=restaurant_id, token=token)
+
+    return RedirectResponse(
+        url=request.url_for("restaurant_detail", restaurant_id=restaurant_id),
+        status_code=303
+    )
+
+@router.get("/project/{restaurant_id}")
+async def get_all_comments_for_project(
     request: Request,
     project_id: int,
 
@@ -79,51 +133,10 @@ async def restaurant_detail(
 
 
 
-
-@router.post("/restaurants/{restaurant_id}/add_comment")
-async def add_comment(
-    request: Request,
-    restaurant_id: int,
-    comment_text: str = Form(...),
-):
-    token = request.cookies.get("access_token")
-
-    if not token:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-    await create_comment(
-        restaurant_id=restaurant_id,
-        feedback=comment_text,
-        token=token
-    )
-
-    return RedirectResponse(
-        url=request.url_for("restaurant_detail", restaurant_id=restaurant_id),
-        status_code=status.HTTP_303_SEE_OTHER
-    )
-
-
-@router.post("/restaurants/favourite/{restaurant_id}/add")
-async def add_to_favourite_route(
-    request: Request,
-    restaurant_id: int,
-):
-    token = request.cookies.get("access_token")
-    if not token:
-        return RedirectResponse(url=request.url_for("login"), status_code=303)
-
-    await add_to_favourite(restaurant_id=restaurant_id, token=token)
-
-    return RedirectResponse(
-        url=request.url_for("restaurant_detail", restaurant_id=restaurant_id),
-        status_code=303
-    )
-
-
 @router.post("/restaurants/favourite/{restaurant_id}/remove")
 async def remove_from_favourite(
-    request: Request,
-    restaurant_id: int,
+        request: Request,
+        restaurant_id: int,
 ):
     token = request.cookies.get("access_token")
     if not token:
@@ -137,38 +150,25 @@ async def remove_from_favourite(
     )
 
 
-
-
-
-
-@router.get("/projects/{project_id}")
-async def project_detail(
+@router.get('/restaurants/{restaurant_id}')
+async def restaurant_detail(
     request: Request,
     project_id: int,
     user: dict = Depends(get_current_user_with_token)
 ):
-    # Получаем сам проект из БД или API
     project = await get_project(project_id)
-    if not project:
-        return templates.TemplateResponse(
-            "error.html",
-            {"request": request, "message": "Проект не знайдено"}
-        )
 
-    # Получаем комментарии
-    comments = project.get("comments", [])
 
-    # Формируем контекст
+
     context = {
-        "request": request,
-        "project": project,
-        "comments": comments,
-        "user": user if user and user.get("name") else None,
-        "is_favourite": False,
+        'request': request,
+        'project': project,
+        'user': user if user.get("name") else None,
+        'is_favourite': False
     }
 
-    # Проверяем, в избранном ли проект
-    token = user.get("token") if user else None
+
+    token = user.get("token")
     if token:
         try:
             context["is_favourite"] = await check_if_favourite(project_id, token)
@@ -176,12 +176,14 @@ async def project_detail(
             print(f"[ERROR is_favourite]: {e}")
             context["is_favourite"] = False
 
-    # Возвращаем шаблон
-    return templates.TemplateResponse("restaurant_detail.html", context)
+    return templates.TemplateResponse('restaurant_detail.html', context=context)
+
+
 
 @router.get('/login')
 @router.post('/login')
-async def login(request: Request, user: dict=Depends(get_current_user_with_token), user_email: str = Form(''), password: str = Form('')):
+async def login(request: Request, user: dict = Depends(get_current_user_with_token), user_email: str = Form(''),
+                password: str = Form('')):
     context = {'request': request}
     print(user, 55555555555555555555555)
     redirect_url = request.url_for("index")
@@ -194,8 +196,6 @@ async def login(request: Request, user: dict=Depends(get_current_user_with_token
         response.delete_cookie('access_token')
         return response
 
-
-
     user_tokens = await login_user(user_email, password)
     access_token = user_tokens.get('access_token')
     if not access_token:
@@ -203,12 +203,9 @@ async def login(request: Request, user: dict=Depends(get_current_user_with_token
         context['errors'] = errors
         return templates.TemplateResponse('login.html', context=context)
 
-
-
     response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=60*5)
+    response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=60 * 5)
     return response
-
 
 
 @router.get('/logout')
@@ -228,11 +225,9 @@ async def register(
         password: str = Form(''),
         user_name: str = Form(''),
 ):
-
     context = {'request': request, "entered_email": user_email, 'entered_name': user_name}
     redirect_url = request.url_for("index")
     if user.get('name'):
-
         response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
         return response
 
@@ -253,3 +248,66 @@ async def register(
     response = templates.TemplateResponse('register.html', context=context)
     return response
 
+
+@router.get("/main_page", response_class=HTMLResponse)
+async def get_main_page(request: Request):
+    return templates.TemplateResponse("main_page.html", {"request": request})
+
+
+@router.get("/user_info", response_class=HTMLResponse)
+async def get_users_data(request: Request):
+    access_token = request.cookies.get("access_token")
+
+    if not access_token:
+        return templates.TemplateResponse(
+            "login.html",
+            {"request": request, "error": "Потрібна авторизація!"}
+        )
+
+    user_info = await get_users_info_for_account(access_token)
+
+    return templates.TemplateResponse(
+        "user_profile.html",
+        {
+            "request": request,
+            "user": user_info
+        }
+    )
+
+
+@router.get("/Upgrade_profile_page", response_class=HTMLResponse)
+async def settings_page(request: Request, user: dict = Depends(get_current_user_with_token)):
+
+    return templates.TemplateResponse(
+        "user_profile_settings.html",
+        {
+            "request": request,
+            "user": user,
+            "users_upgrade": None
+        }
+    )
+
+
+@router.post("/settings_upgrade_profile")
+async def Edit_users_profile(
+        request: Request,
+        user: dict = Depends(get_current_user_with_token),
+        name: str = Form(None),
+        profile_description: str = Form(None),
+        email: str = Form(None)):
+    Upgraded_profile = await edit_users_profile(
+        name=name,
+        profile_description=profile_description,
+        email=email,
+        access_token=user.get("access_token"),
+        token=user.get("token")
+    )
+
+    return templates.TemplateResponse(
+        "user_profile_settings.html",
+        {
+            "request": request,
+            "users_upgrade": Upgraded_profile,
+            "user": user
+        }
+    )
