@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Налаштування профілю | Projectory</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: #f3f6fb;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #222;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #0078ff;
+            outline: none;
+        }
+
+        .form-buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+
+        .btn-save {
+            background: #0078ff;
+            color: #fff;
+        }
+
+        .btn-save:hover {
+            background: #005fd4;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #000;
+        }
+
+        .btn-cancel:hover {
+            background: #d0d0d0;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+            text-align: center;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+            text-align: center;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #0078ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Стили для превью аватара */
+        .avatar-preview {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .avatar-preview img {
+            max-width: 100px;
+            border-radius: 8px;
+            border: 2px solid #0078ff;
+        }
+
+        .current-avatar {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Редагування профілю</h2>
+
+    {% if users_upgrade and users_upgrade.status == "200" %}
+    <div class="success-message">
+        ✅ Профіль успішно оновлено!
+    </div>
+    {% endif %}
+
+    {% if users_upgrade and users_upgrade.detail %}
+    <div class="error-message">
+        ❌ {{ users_upgrade.detail }}
+    </div>
+    {% endif %}
+
+
+    <form method="post" action="/settings_upgrade_profile" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="username">Ім'я користувача *</label>
+            <input type="text" id="username" name="name"
+                   value="{% if users_upgrade and users_upgrade.updated_user %}{{ users_upgrade.updated_user.name }}{% else %}{{ user.name or '' }}{% endif %}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Опис профілю</label>
+            <textarea id="description" name="profile_description" rows="3"
+                      placeholder="Розкажіть трохи про себе">{% if users_upgrade and users_upgrade.updated_user %}{{ users_upgrade.updated_user.description }}{% else %}{{ user.profile_description or '' }}{% endif %}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Електронна пошта *</label>
+            <input type="email" id="email" name="email"
+                   value="{% if users_upgrade and users_upgrade.updated_user %}{{ users_upgrade.updated_user.email }}{% else %}{{ user.email or '' }}{% endif %}" required>
+        </div>
+
+
+        <div class="form-group">
+            <label for="user_avatar">Аватар профілю</label>
+            <input type="file" id="user_avatar" name="user_avatar" accept="image/*">
+
+
+            {% if user.user_avatar %}
+            <div class="avatar-preview">
+                <div class="current-avatar">Поточний аватар:</div>
+                <img src="{{ user.user_avatar }}" alt="Поточний аватар">
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-buttons">
+            <a href="/user_info" class="btn btn-cancel">Скасувати</a>
+            <button type="submit" class="btn btn-save">Оновити профіль</button>
+        </div>
+    </form>
+</div>
+
+<a href="/user_info" class="back-link">← Повернутися до мого профілю</a>
+
+</body>
+</html>

@@ -1,17 +1,18 @@
 import uuid
 
-from fastapi import APIRouter, Depends, status, HTTPException, Request, BackgroundTasks, Header, Body
+from fastapi import APIRouter, Depends, status, HTTPException, Request, BackgroundTasks, Header, Body, UploadFile, File, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from applications.users.crud import create_user_in_db, get_user_by_email, activate_user_account
-from applications.users.shemas import BaseUserInfo, RegisterUserFields, NewComment
+from applications.users.shemas import BaseUserInfo, RegisterUserFields, NewComment, UserSchema, UserUpdateProfile
 from database.session_dependencies import get_async_session
 from services.rabbit.constants import SupportedQueues
 from services.rabbit.rabbitmq_service import rabbitmq_broker
 from applications.users.models import User
 from applications.auth.auth_handler import AuthHandler
 from applications.auth.security import get_current_user
-
+from services.s3.s3 import s3_storage
+from typing import Optional
 
 router_users = APIRouter()
 
@@ -48,7 +49,8 @@ async def verify_user(user_uuid: uuid.UUID, session: AsyncSession = Depends(get_
 
 
 @router_users.patch("/users/add_comment")
-async def add_comment_to_user(comment: dict = Body(...), user: User = Depends(get_current_user), session: AsyncSession = Depends(get_async_session)):
+async def add_comment_to_user(comment: dict = Body(...), user: User = Depends(get_current_user),
+                              session: AsyncSession = Depends(get_async_session)):
     user.comments.append({
         "restaurant_id": comment["restaurant_id"],
         "text": comment["text"],
@@ -56,4 +58,69 @@ async def add_comment_to_user(comment: dict = Body(...), user: User = Depends(ge
     })
     session.add(user)
     await session.commit()
-    return {"status": "ok","comments": user.comments}
+    return {"status": "ok", "comments": user.comments}
+
+
+@router_users.get("/me", response_model=UserSchema)
+async def get_my_info(
+        current_user: User = Depends(get_current_user),
+):
+    return current_user
+
+
+
+
+@router_users.patch("/settings_upgrade_profile")
+async def upgrade_users_profile(
+    name: str = Form(None),
+    profile_description: str = Form(None),
+    email: str = Form(None),
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_async_session),
+    user_avatar: UploadFile = File(None)
+):
+    updated = False
+
+    if name is not None:
+        if not name.strip():
+            raise HTTPException(status_code=400, detail="Ім'я не може бути порожнім.")
+        current_user.name = name
+        updated = True
+
+    if profile_description is not None:
+        current_user.profile_description = profile_description
+        updated = True
+
+    if email is not None:
+        current_user.email = email
+        updated = True
+
+
+    if user_avatar and user_avatar.filename:
+        try:
+            user_uuid = str(uuid.uuid4())
+            avatar_url = await s3_storage.upload_user_avatar(user_avatar, user_uuid)
+            current_user.user_avatar = avatar_url
+            updated = True
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+    if not updated:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Немає даних для оновлення."
+        )
+
+    session.add(current_user)
+    await session.commit()
+    await session.refresh(current_user)
+
+    return {
+        "status": "200",
+        "updated_user": {
+            "name": current_user.name,
+            "description": current_user.profile_description,
+            "email": current_user.email,
+            "user_avatar": current_user.user_avatar
+        }
+    }

@@ -26,5 +26,12 @@ class S3Storage:
             url = f"{settings.PUBLIC_URL}/{path}"
         return url
 
+    async def upload_user_avatar(self, file: UploadFile, user_uuid: str) -> str:
+        async for s3_client in self.get_s3_session():
+            path = f'user/{user_uuid}/{file.filename}'
+            await s3_client.upload_fileobj(file, self.bucket_name, path)
+            url = f"{settings.PUBLIC_URL}/{path}"
+        return url
+
 
 s3_storage = S3Storage()

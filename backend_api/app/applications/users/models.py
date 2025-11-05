@@ -23,8 +23,8 @@ class User(Base):
 
     is_admin: Mapped[bool] = mapped_column(default=False, nullable=True)
     is_verified: Mapped[bool] = mapped_column(default=False, nullable=True)
-    profile_description: Mapped[str] = mapped_column(Text, nullable=False)
-    user_avatar: Mapped[str] = mapped_column(nullable=False)
+    profile_description: Mapped[str] = mapped_column(Text, nullable=True)
+    user_avatar: Mapped[str] = mapped_column(nullable=True)
     followers: Mapped[int] = mapped_column(default=0)
     subscriptions: Mapped[int] = mapped_column(default=0)
 

@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Інфо о ресторанах</title>
     <style>
-        /* ==================================== */
-        /* === Спільні базові стилі (BASE) ==== */
-        /* ==================================== */
+
         body {
             margin: 0;
             font-family: "Inter", sans-serif;
@@ -15,9 +13,6 @@
             color: #222;
         }
 
-        /* =================================== */
-        /* === Уніфікований ВЕРХНІЙ НАВБАР ==== */
-        /* =================================== */
         .navbar {
             width: 100%;
             background: linear-gradient(90deg, #0078ff, #005fd4);
@@ -63,16 +58,11 @@
             text-shadow: 0 0 5px rgba(255, 235, 59, 0.4);
         }
 
-        /* ============================================= */
-        /* === Спеціальні стилі для КАТАЛОГУ (Catalog) === */
-        /* ============================================= */
-
         .catalog-page {
             display: flex;
             margin-top: 60px;
         }
 
-        /* Ліве меню (Sidebar) */
         .sidebar {
             width: 180px;
             background: white;
@@ -113,7 +103,6 @@
             color: white;
         }
 
-        /* Контент каталогу */
         .content {
             margin-left: 210px;
             padding: 30px 40px;
@@ -286,15 +275,16 @@
         </form>
     </aside>
 
-    <main class="content">
+    <man class="content">
         <h2>Каталог проєктів</h2>
         <div class="projects-grid" id="projectsGrid">
             {% for project in restaurants %}
                 <div class="project-card" data-category="{{ project.category|lower }}">
+                    <small class="text-muted">{{ project.created_at|naturaltime }}</small>
                     <img src="{{ project.main_image }}" alt="{{ project.project_name }}">
                     <div class="project-info">
                         <h4>{{ project.project_name }}</h4>
-                        <p>📍 {{ project.category }}</p>
+                        <p>Категорія: {{ project.category }}</p>
                         <p>{{ project.description }}</p>
                         <a href="{{ url_for('restaurant_detail', project_id=project.id) }}" class="view-btn">Дізнатися
                             більше</a>
@@ -302,7 +292,7 @@
                 </div>
             {% endfor %}
         </div>
-    </main>
+    </man>
 </div>
 
 <script>

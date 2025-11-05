@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Головна | MAN Projects</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #0078ff;
+            --secondary-color: #005fd4;
+            --text-dark: #2c3e50;
+            --text-light: #ecf0f1;
+        }
+
+        body {
+            background-image: url('{{ url_for('static', path='images/artistic-blurry-colorful-wallpaper-background.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        .hero-section {
+            padding-top: 150px;
+            padding-bottom: 80px;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 50;
+        }
+
+        .hero-section h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .hero-section p.tagline {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #ecf0f1;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            margin-bottom: 40px;
+        }
+
+        .website-description {
+            padding: 60px 50px;
+            max-width: 1000px;
+            margin: 50px auto 80px auto;
+            line-height: 1.7;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #34495e;
+        }
+
+        .website-description h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0078ff;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: rgba(0, 120, 255, 0.05);
+            border-left: 5px solid #005fd4;
+            border-radius: 8px;
+        }
+
+        .website-description ul {
+            list-style: none;
+            padding-left: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .website-description ul li {
+            position: relative;
+            padding: 15px 20px 15px 45px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .website-description ul li:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .website-description ul li::before {
+            color: #0078ff;
+            font-size: 1.2rem;
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: white;
+            background-color: #0078ff;
+            border-radius: 50px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 6px 15px rgba(0, 120, 255, 0.3);
+            margin-top: 30px;
+            border: none;
+        }
+
+        .cta-button:hover {
+            background-color: #005fd4;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 120, 255, 0.4);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #3498db !important;
+        }
+
+    </style>
+</head>
+<body>
+{% include "components/navbar.html" %}
+
+<main class="hero-section">
+    <h1 class="section-intro">
+        Projectory
+    </h1>
+    <p class="tagline">Проекти, які надихають та об'єднують</p>
+
+    <a href={{ url_for('register') }} class="cta-button">Почати ділитися проектами</a>
+
+</main>
+
+<div class="website-description">
+    <p>Ласкаво просимо на Projectory — платформу, де ідеї перетворюються на реальні проекти та знаходять свою аудиторію!
+        Тут кожен користувач може:</p>
+    <ul>
+        <li>
+            Презентувати свої креативні, освітні чи наукові проекти.
+        </li>
+        <li>
+            Отримувати зворотний зв'язок та оцінки від спільноти, щоб покращувати свої роботи.
+        </li>
+        <li>
+            Відкривати собі цікаві проєкти інших учасників і надихатися новими ідеями.
+        </li>
+        <li>
+            Знаходити однодумців для спільної роботи та обміну досвідом.
+        </li>
+    </ul>
+
+    <h3>Ми віримо, що кожна ідея заслуговує на побачення. Почніть ділитися своїми проектами сьогодні та станьте частиною
+        спільноти, яка цінує креативність, інновації та розвиток.</h3>
+
+</div>
+</body>
+</html>
