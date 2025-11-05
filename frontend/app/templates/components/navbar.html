@@ -1,71 +1,51 @@
-<style>
-
-/* Унифицируем секцию логина/логаута */
-.custom-navbar .login-section,
-.custom-navbar .d-flex.align-items-center.gap-2 {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-left: 1rem;
-}
-
-/* Универсальные кнопки навбара (Bootstrap-переопределение) */
-.custom-navbar .btn {
-    border-radius: 8px !important;
-    padding: 6px 12px !important;
-    font-weight: 600 !important;
-    text-transform: none !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Цвета кнопок, чтобы выглядели одинаково */
-.custom-navbar .btn-success {
-    background-color: #28a745 !important;
-    border: none !important;
-    color: #fff !important;
-}
-.custom-navbar .btn-success:hover {
-    background-color: #218838 !important;
-}
-
-.custom-navbar .btn-warning {
-    background-color: #ffc107 !important;
-    border: none !important;
-    color: #000 !important;
-}
-.custom-navbar .btn-warning:hover {
-    background-color: #e0a800 !important;
-}
-</style>
-
-
-
-
-<nav class="navbar navbar-expand-lg navbar-dark custom-navbar fixed-top">
-    <div class="container-fluid py-2">
-
-
-        <a class="navbar-brand d-flex align-items-center me-4" href="/main_page">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="main-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/main_page">
             Projectory
         </a>
 
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-
-        <div class="collapse navbar-collapse align-items-center justify-content-between" id="navbarSupportedContent">
-
-            <div class="nav-right">
-                <a href={{ url_for('index') }}>Каталог проєктів</a>
-                <a href={{ url_for('get_users_data') }}>Мій акаунт</a>
-                {% include "components/login_comp.html" %}
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <div class="navbar-nav ms-auto d-flex align-items-center flex-row gap-3">
+                <a class="nav-link" href="{{ url_for('index') }}">Каталог проєктів</a>
+                <a class="nav-link" href="{{ url_for('get_users_data') }}">Мій акаунт</a>
+                <div class="nav-item">
+                    {% include "components/login_comp.html" %}
+                </div>
             </div>
+        </div>
+    </div>
 </nav>
 
-</div>
-</div>
-</nav>
+<style>
+#main-navbar {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 0.8rem 0;
+}
+
+#main-navbar .navbar-brand {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #3498db, #2ecc71);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-right: 2rem;
+}
+
+#main-navbar .nav-link {
+    color: #ecf0f1 !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+#main-navbar .nav-link:hover {
+    color: #3498db !important;
+    background: rgba(255, 255, 255, 0.1);
+}
+</style>

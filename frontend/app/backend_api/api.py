@@ -2,7 +2,7 @@
 
 import httpx
 from settings import settings
-from fastapi import Request
+from fastapi import Request, UploadFile
 
 
 async def login_user(user_email: str, password: str):
@@ -153,8 +153,8 @@ async def get_users_info_for_account(access_token: str):
         user_info = response.json()
         return user_info
 
-
-async def edit_users_profile(access_token: str, profile_description: str, name: str, email: str, token: str):
+## TO ADD WITHOUT AVA
+async def edit_users_profile(access_token: str, profile_description: str, name: str, email: str, user_avatar: str, token: str):
     async with httpx.AsyncClient() as client:
         response = await client.patch(
             url=f'{settings.BACKEND_API}/users/settings_upgrade_profile',
@@ -162,7 +162,8 @@ async def edit_users_profile(access_token: str, profile_description: str, name: 
                 'access_token': access_token,
                 'profile_description': profile_description,
                 'name': name,
-                'email': email
+                'email': email,
+                'user_avatar': user_avatar
             },
             headers={
                 'Authorization': f'Bearer {access_token}',
@@ -171,3 +172,31 @@ async def edit_users_profile(access_token: str, profile_description: str, name: 
         )
         new_description = response.json()
         return new_description
+
+## TO ADD WITH AVA
+async def edit_users_profile_with_avatar(access_token: str, profile_description: str, name: str, email: str,
+                                         user_avatar: UploadFile, token: str):
+    async with httpx.AsyncClient() as client:
+
+        data = {
+            'access_token': access_token or "",
+            'profile_description': profile_description or "",
+            'name': name or "",
+            'email': email or "",
+        }
+
+        file_content = await user_avatar.read()
+        files = {
+            'user_avatar': (user_avatar.filename, file_content, user_avatar.content_type)
+        }
+
+        response = await client.patch(
+            url=f'{settings.BACKEND_API}/users/settings_upgrade_profile',
+            data=data,
+            files=files,
+            headers={
+                'Authorization': f'Bearer {access_token}',
+            },
+            timeout=30.0
+        )
+        return response.json()

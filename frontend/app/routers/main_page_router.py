@@ -3,11 +3,11 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 
 from backend_api.api import get_current_user_with_token, login_user, get_projects, get_project, get_user_info, \
-    get_project_by_category, get_users_info_for_account, edit_users_profile
+    get_project_by_category, get_users_info_for_account, edit_users_profile,edit_users_profile_with_avatar
 import humanize
 from datetime import datetime
 from fastapi.responses import HTMLResponse
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile, File
 from backend_api.api import register_user, send_comment, get_all_comments, create_comment, add_to_favourite, \
     remove_from_favourite, check_if_favourite
 
@@ -116,10 +116,11 @@ async def add_to_favourite_route(
         status_code=303
     )
 
+
 @router.get("/project/{restaurant_id}")
 async def get_all_comments_for_project(
-    request: Request,
-    project_id: int,
+        request: Request,
+        project_id: int,
 
 ):
     project = await  get_project(project_id)
@@ -130,7 +131,6 @@ async def get_all_comments_for_project(
         "project": project,
         "comments": comments,
     })
-
 
 
 @router.post("/restaurants/favourite/{restaurant_id}/remove")
@@ -152,13 +152,11 @@ async def remove_from_favourite(
 
 @router.get('/restaurants/{restaurant_id}')
 async def restaurant_detail(
-    request: Request,
-    project_id: int,
-    user: dict = Depends(get_current_user_with_token)
+        request: Request,
+        project_id: int,
+        user: dict = Depends(get_current_user_with_token)
 ):
     project = await get_project(project_id)
-
-
 
     context = {
         'request': request,
@@ -166,7 +164,6 @@ async def restaurant_detail(
         'user': user if user.get("name") else None,
         'is_favourite': False
     }
-
 
     token = user.get("token")
     if token:
@@ -177,7 +174,6 @@ async def restaurant_detail(
             context["is_favourite"] = False
 
     return templates.TemplateResponse('restaurant_detail.html', context=context)
-
 
 
 @router.get('/login')
@@ -277,7 +273,6 @@ async def get_users_data(request: Request):
 
 @router.get("/Upgrade_profile_page", response_class=HTMLResponse)
 async def settings_page(request: Request, user: dict = Depends(get_current_user_with_token)):
-
     return templates.TemplateResponse(
         "user_profile_settings.html",
         {
@@ -294,14 +289,29 @@ async def Edit_users_profile(
         user: dict = Depends(get_current_user_with_token),
         name: str = Form(None),
         profile_description: str = Form(None),
-        email: str = Form(None)):
-    Upgraded_profile = await edit_users_profile(
-        name=name,
-        profile_description=profile_description,
-        email=email,
-        access_token=user.get("access_token"),
-        token=user.get("token")
-    )
+        email: str = Form(None),
+        user_avatar: UploadFile = File(None)):
+
+
+    if user_avatar and user_avatar.filename:
+        Upgraded_profile = await edit_users_profile_with_avatar(
+            name=name,
+            profile_description=profile_description,
+            email=email,
+            user_avatar=user_avatar,
+            access_token=user.get("access_token"),
+            token=user.get("token")
+        )
+    else:
+
+        Upgraded_profile = await edit_users_profile(
+            name=name,
+            profile_description=profile_description,
+            email=email,
+            user_avatar=None,
+            access_token=user.get("access_token"),
+            token=user.get("token")
+        )
 
     return templates.TemplateResponse(
         "user_profile_settings.html",

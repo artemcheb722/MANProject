@@ -41,6 +41,7 @@ class UserSchema(BaseModel):
     followers: int
     profile_description: Optional[str] = None
     subscriptions: int
+    user_avatar: str
 
 class UserUpdateProfile(BaseModel):
     name: Optional[str] = None

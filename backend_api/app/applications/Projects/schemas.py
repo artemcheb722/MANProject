@@ -13,6 +13,7 @@ class ProjectSchema(BaseModel):
     technologies: str
     detailed_description: str
     main_image: str
+    created_at: datetime
     images: list[str]
 
     class Config:

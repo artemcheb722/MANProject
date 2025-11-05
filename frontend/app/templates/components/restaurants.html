@@ -280,6 +280,7 @@
         <div class="projects-grid" id="projectsGrid">
             {% for project in restaurants %}
                 <div class="project-card" data-category="{{ project.category|lower }}">
+                    <small class="text-muted">{{ project.created_at|naturaltime }}</small>
                     <img src="{{ project.main_image }}" alt="{{ project.project_name }}">
                     <div class="project-info">
                         <h4>{{ project.project_name }}</h4>

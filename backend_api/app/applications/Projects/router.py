@@ -60,7 +60,7 @@ async def get_projects_by_category(category: str, session: AsyncSession = Depend
 
 
 @router_projects.get('/{pk}')
-async def get_product(pk: int, session: AsyncSession = Depends(get_async_session), ) -> ProjectSchema:
+async def get_project(pk: int, session: AsyncSession = Depends(get_async_session), ) -> ProjectSchema:
     product = await get_project_by_pk(pk, session)
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with pk #{pk} not found")
@@ -102,7 +102,7 @@ async def post_comments(
 
 
 @router_projects.get("/comments/{project_id}")
-async def get_comments_for_restaurant(
+async def get_comments_for_project(
         project_id: int,
         session: AsyncSession = Depends(get_async_session)
 ):

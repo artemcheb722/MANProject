@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, status, HTTPException, Request, BackgroundTasks, Header, Body
+from fastapi import APIRouter, Depends, status, HTTPException, Request, BackgroundTasks, Header, Body, UploadFile, File, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from applications.users.crud import create_user_in_db, get_user_by_email, activate_user_account
@@ -11,6 +11,8 @@ from services.rabbit.rabbitmq_service import rabbitmq_broker
 from applications.users.models import User
 from applications.auth.auth_handler import AuthHandler
 from applications.auth.security import get_current_user
+from services.s3.s3 import s3_storage
+from typing import Optional
 
 router_users = APIRouter()
 
@@ -67,30 +69,41 @@ async def get_my_info(
 
 
 
+
 @router_users.patch("/settings_upgrade_profile")
 async def upgrade_users_profile(
-    user_data: UserUpdateProfile,
+    name: str = Form(None),
+    profile_description: str = Form(None),
+    email: str = Form(None),
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session),
+    user_avatar: UploadFile = File(None)
 ):
-
     updated = False
 
-
-    if user_data.name is not None:
-        if not user_data.name.strip():
+    if name is not None:
+        if not name.strip():
             raise HTTPException(status_code=400, detail="Ім'я не може бути порожнім.")
-        current_user.name = user_data.name
+        current_user.name = name
         updated = True
 
-    if user_data.profile_description is not None:
-        current_user.profile_description = user_data.profile_description
+    if profile_description is not None:
+        current_user.profile_description = profile_description
         updated = True
 
-    if user_data.email is not None:
-        current_user.email = user_data.email
+    if email is not None:
+        current_user.email = email
         updated = True
 
+
+    if user_avatar and user_avatar.filename:
+        try:
+            user_uuid = str(uuid.uuid4())
+            avatar_url = await s3_storage.upload_user_avatar(user_avatar, user_uuid)
+            current_user.user_avatar = avatar_url
+            updated = True
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
     if not updated:
         raise HTTPException(
@@ -108,9 +121,6 @@ async def upgrade_users_profile(
             "name": current_user.name,
             "description": current_user.profile_description,
             "email": current_user.email,
+            "user_avatar": current_user.user_avatar
         }
     }
-
-
-
-

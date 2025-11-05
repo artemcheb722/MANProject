@@ -372,6 +372,7 @@
         <h1>{{ project.name }}</h1>
         <div class="project-meta">
             <span><strong>Категорія:</strong> {{ project.category }}</span>
+             <small class="text-muted">Створено: {{ project.created_at|naturaltime }}</small>
         </div>
     </div>
 
