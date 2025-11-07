@@ -15,6 +15,7 @@ class ProjectSchema(BaseModel):
     main_image: str
     created_at: datetime
     images: list[str]
+    user: int
 
     class Config:
         from_attributes = True

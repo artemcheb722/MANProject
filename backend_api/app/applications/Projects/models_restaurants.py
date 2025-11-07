@@ -17,6 +17,7 @@ class Project(ModelCommonMixin, Base):
     __tablename__ = "projects"
 
     uuid_data: Mapped[uuid.UUID] = mapped_column(default=uuid.uuid4)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
 
     project_name: Mapped[str] = mapped_column(String(150), index=True, nullable=False)
     category: Mapped[str] = mapped_column(String(150), nullable=True)
@@ -25,6 +26,7 @@ class Project(ModelCommonMixin, Base):
     main_image: Mapped[str] = mapped_column(nullable=True)
     images: Mapped[list[str]] = mapped_column(ARRAY(String), default=list, nullable=True)
     detailed_description: Mapped[str] = mapped_column(Text, nullable=True)
+    user = relationship("User", back_populates="projects")
 
     comments_relation = relationship(
         "ProjectComments",

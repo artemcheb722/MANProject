@@ -4,320 +4,546 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ project.name }} | Деталі Проєкту</title>
-
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        :root {
+            --primary-color: #0078ff;
+            --primary-dark: #005fd4;
+            --gradient: linear-gradient(135deg, #0078ff 0%, #005fd4 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
 
         body {
             margin: 0;
             font-family: "Inter", sans-serif;
-            background: #f7f8fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
             color: #222;
+            min-height: 100vh;
         }
 
 
         .navbar {
             width: 100%;
-            background: linear-gradient(90deg, #0078ff, #005fd4);
+            background: var(--gradient);
             color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 40px;
+            padding: 12px 40px;
             box-sizing: border-box;
             position: fixed;
             top: 0;
             left: 0;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            height: 60px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            height: 70px;
+            backdrop-filter: blur(10px);
         }
 
         .nav-logo {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 26px;
+            font-weight: 800;
             text-decoration: none;
             color: white;
             letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .nav-right {
             display: flex;
-            gap: 30px;
+            gap: 35px;
         }
 
         .nav-right a {
             color: white;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 16px;
-            padding: 5px 0;
-            transition: 0.3s;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
             position: relative;
+            border-radius: 25px;
+        }
+
+        .nav-right a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-right a:hover::before {
+            opacity: 1;
         }
 
         .nav-right a:hover {
-            color: #ffeb3b;
-            text-shadow: 0 0 5px rgba(255, 235, 59, 0.4);
+            transform: translateY(-2px);
+            text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
         }
 
+
         .project-detail-container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 90px auto 50px;
             padding: 0 20px;
         }
 
-        .project-header {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
+        /* Back Button */
+        .back-btn {
+            background: var(--gradient);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
             align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+
+        .project-header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
         }
 
         .project-header h1 {
-            font-size: 36px;
-            color: #0078ff;
-            margin: 0;
+            font-size: 42px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 15px 0;
+            line-height: 1.2;
         }
 
         .project-meta {
             display: flex;
-            gap: 30px;
+            gap: 40px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 14px;
             color: #666;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px 16px;
+            border-radius: 25px;
+            border: 1px solid rgba(0, 120, 255, 0.2);
         }
 
-        .project-meta span {
-            display: block;
-        }
-
-        .project-meta strong {
+        .meta-item strong {
             color: #333;
             font-weight: 600;
         }
 
+        /* Project Body */
         .project-body {
             display: flex;
             gap: 30px;
+            align-items: flex-start;
         }
 
         .project-gallery {
             flex: 2;
         }
 
+        .project-sidebar {
+            flex: 1;
+            position: sticky;
+            top: 100px;
+        }
+
+
         .carousel {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            position: relative;
         }
 
         .carousel-img {
             width: 100%;
             height: 500px;
             object-fit: cover;
-            border-radius: 15px;
+            transition: transform 0.3s ease;
         }
 
-        .description-block {
-            background: white;
+        .carousel:hover .carousel-img {
+            transform: scale(1.02);
+        }
+
+        /* Content Blocks */
+        .content-block {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
             padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
         }
 
-        .description-block h3 {
-            color: #0078ff;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
+        .content-block:hover {
+            transform: translateY(-5px);
+        }
+
+        .content-block h3 {
+            color: var(--primary-color);
+            border-bottom: 2px solid rgba(0, 120, 255, 0.2);
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-block h3::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .content-block p {
+            line-height: 1.6;
+            color: #555;
+            margin: 0;
+            font-size: 15px;
+        }
+
+        /* Technologies & Category */
+        .tech-category-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .tech-category-item {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .tech-category-item h4 {
+            color: var(--primary-color);
             margin-top: 0;
             margin-bottom: 15px;
-            font-size: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .technologies, .category {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
-        }
-
-        .technologies h4, .category h4 {
-            color: #0078ff;
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-
+        /* Reviews */
         .reviews {
-            background: white;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
             padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .reviews h3 {
-            color: #0078ff;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
+            color: var(--primary-color);
+            border-bottom: 2px solid rgba(0, 120, 255, 0.2);
+            padding-bottom: 12px;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            font-size: 22px;
+            font-weight: 700;
         }
 
-        .reviews ul {
+        .reviews-list {
             list-style: none;
             padding: 0;
             margin: 0;
         }
 
-        .reviews li {
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
+        .review-item {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
         }
 
-        .reviews li:last-child {
+        .review-item:hover {
+            background: rgba(0, 120, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .review-item:last-child {
             border-bottom: none;
         }
 
-        .text-muted {
-            color: #666;
+        .review-author {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .review-author::before {
+            content: '👤';
             font-size: 14px;
         }
 
+        .review-text {
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .review-time {
+            color: #888;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .review-time::before {
+            content: '🕒';
+            font-size: 11px;
+        }
+
+        /* Add Review Form */
         .add-review {
-            background: white;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
             padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .add-review h3 {
-            color: #0078ff;
+            color: var(--primary-color);
             margin-top: 0;
             margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 700;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(0, 120, 255, 0.3);
+            border-radius: 12px;
             font-family: "Inter", sans-serif;
             font-size: 14px;
             resize: vertical;
             box-sizing: border-box;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 120, 255, 0.1);
+            background: white;
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 14px 28px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-family: "Inter", sans-serif;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block;
-            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
         }
 
         .btn-success {
-            background: #4caf50;
+            background: var(--gradient);
             color: white;
+            box-shadow: var(--shadow);
         }
 
         .btn-success:hover {
-            background: #43a047;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
         }
 
-        .btn-primary {
-            background: #0078ff;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #005fd4;
-        }
-
+        /* Alert */
         .alert {
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .alert-warning {
-            background: #fff8e1;
-            border: 1px solid #ffd54f;
+            background: rgba(255, 193, 7, 0.1);
+            border-color: rgba(255, 193, 7, 0.3);
             color: #856404;
         }
 
+        /* Favourite Button */
         .favourite-btn {
-            background: none;
+            background: var(--gradient);
             border: none;
             cursor: pointer;
-            font-size: 24px;
-            padding: 10px;
-            margin-bottom: 20px;
+            font-size: 28px;
+            padding: 15px;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
         }
 
-        .project-sidebar {
-            flex: 1;
+        .favourite-btn:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: var(--shadow-hover);
         }
 
+        /* Sidebar */
         .author-info {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 25px;
+            border-radius: 20px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .author-info:hover {
+            transform: translateY(-5px);
         }
 
         .author-info img {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid #0078ff;
-            margin-bottom: 10px;
+            border: 3px solid var(--primary-color);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 120, 255, 0.3);
         }
 
         .author-info h4 {
-            margin: 5px 0 15px;
-            font-size: 18px;
+            margin: 0 0 10px 0;
+            font-size: 20px;
             color: #333;
+            font-weight: 700;
+        }
+
+        .author-bio {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
 
         .cta-btn {
-            background: #0078ff;
+            background: var(--gradient);
             color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 12px 20px;
+            border-radius: 12px;
             text-decoration: none;
             font-weight: 600;
             display: block;
-            transition: background 0.2s, transform 0.2s;
+            transition: all 0.3s ease;
             text-align: center;
             margin-bottom: 10px;
+            box-shadow: var(--shadow);
         }
 
         .cta-btn:hover {
-            background: #005fd4;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+            color: white;
         }
 
-        /* Адаптивність */
+        .cta-btn.secondary {
+            background: rgba(0, 120, 255, 0.1);
+            color: var(--primary-color);
+            border: 1px solid rgba(0, 120, 255, 0.3);
+        }
+
+        .cta-btn.secondary:hover {
+            background: var(--gradient);
+            color: white;
+        }
+
+        /* Responsive Design */
         @media (max-width: 900px) {
             .navbar {
-                padding: 10px 15px;
-                height: 50px;
+                padding: 12px 20px;
+                height: 60px;
             }
 
             .nav-logo {
-                font-size: 20px;
+                font-size: 22px;
             }
 
             .nav-right {
@@ -325,60 +551,90 @@
             }
 
             .nav-right a {
+                padding: 6px 12px;
                 font-size: 14px;
             }
 
             .project-detail-container {
                 padding: 0 15px;
-                margin-top: 70px;
+                margin-top: 80px;
             }
 
             .project-header {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 20px;
+                padding: 25px;
             }
 
             .project-header h1 {
-                font-size: 28px;
-                margin-bottom: 15px;
+                font-size: 32px;
             }
 
             .project-meta {
-                gap: 20px;
-                font-size: 12px;
+                gap: 15px;
             }
 
             .project-body {
                 flex-direction: column;
             }
 
+            .project-sidebar {
+                position: static;
+            }
+
             .carousel-img {
-                height: 300px;
+                height: 350px;
+            }
+
+            .tech-category-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .project-detail-container {
+                margin-top: 70px;
+            }
+
+            .project-header h1 {
+                font-size: 28px;
+            }
+
+            .meta-item {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .carousel-img {
+                height: 250px;
+            }
+
+            .content-block, .reviews, .add-review {
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
 
-
 <main class="project-detail-container">
 
-    <a href="{{ url_for('index') }}" class="btn btn-primary" style="margin-bottom: 20px;">
+    <a href="{{ url_for('index') }}" class="back-btn">
         ⬅ Повернутися на головну
     </a>
 
     <div class="project-header">
         <h1>{{ project.name }}</h1>
         <div class="project-meta">
-            <span><strong>Категорія:</strong> {{ project.category }}</span>
-             <small class="text-muted">Створено: {{ project.created_at|naturaltime }}</small>
+            <div class="meta-item">
+                <strong>Категорія:</strong> {{ project.category }}
+            </div>
+            <div class="meta-item">
+                <strong>Створено:</strong> {{ project.created_at|naturaltime }}
+            </div>
         </div>
     </div>
 
     <div class="project-body">
         <div class="project-gallery">
-
             {% if project.images and project.images|length > 0 %}
                 <div class="carousel">
                     {% for image in project.images %}
@@ -386,37 +642,37 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <img src="{{ project.main_image }}" class="carousel-img" alt="Фото проекту">
+                <div class="carousel">
+                    <img src="{{ project.main_image }}" class="carousel-img" alt="Фото проекту">
+                </div>
             {% endif %}
 
-
-            <section class="description-block">
+            <section class="content-block">
                 <h3>Опис проєкту</h3>
                 <p>{{ project.detailed_description }}</p>
             </section>
 
+            <div class="tech-category-container">
+                <section class="tech-category-item">
+                    <h4>🛠️ Технології</h4>
+                    <p>{{ project.technologies }}</p>
+                </section>
 
-            <section class="technologies">
-                <h4>Технології</h4>
-                <p>{{ project.technologies }}</p>
-            </section>
+                <section class="tech-category-item">
+                    <h4>📁 Категорія</h4>
+                    <p>{{ project.category }}</p>
+                </section>
+            </div>
 
-
-            <section class="category">
-                <h4>Категорія</h4>
-                <p>{{ project.category }}</p>
-            </section>
-
-            <div class="reviews mb-5">
-                <h3>Коментарі</h3>
-
+            <div class="reviews">
+                <h3>💬 Коментарі</h3>
                 {% if comments %}
-                    <ul>
+                    <ul class="reviews-list">
                         {% for comment in comments %}
-                            <li>
-                                &nbsp; &nbsp;<strong>{{ comment.author }}</strong>: {{ comment.text }}
-                                <br>
-                                <small class="text-muted">{{ comment.created_at|naturaltime }}</small>
+                            <li class="review-item">
+                                <div class="review-author">{{ comment.author }}</div>
+                                <div class="review-text">{{ comment.text }}</div>
+                                <div class="review-time">{{ comment.created_at|naturaltime }}</div>
                             </li>
                         {% endfor %}
                     </ul>
@@ -424,24 +680,23 @@
                     <p class="text-muted">Коментарів ще немає.</p>
                 {% endif %}
             </div>
+
             {% if request.cookies.access_token %}
-                <div class="add-review mb-5">
-                    <h3>Додати свій коментар</h3>
+                <div class="add-review">
+                    <h3>✍️ Додати свій коментар</h3>
                     <form method="post" action="{{ url_for('add_comment', project_id=project.id) }}">
-                        <div class="mb-3">
-            <textarea name="comment_text" class="form-control" rows="4"
-                      placeholder="Напишіть свій коментар..." required></textarea>
+                        <div style="margin-bottom: 20px;">
+                            <textarea name="comment_text" class="form-control" rows="4"
+                                      placeholder="Напишіть свій коментар..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-success">Надіслати</button>
+                        <button type="submit" class="btn btn-success">Надіслати коментар</button>
                     </form>
                 </div>
             {% else %}
-                <div class="alert alert-warning mt-4">
-                    Щоб залишати свої коментарі, будь ласка, <a href="{{ url_for('login') }}">увійдіть в акаунт</a>.
+                <div class="alert alert-warning">
+                    Щоб залишати свої коментарі, будь ласка, <a href="{{ url_for('login') }}" style="color: #0078ff; font-weight: 600;">увійдіть в акаунт</a>.
                 </div>
             {% endif %}
-
-
 
             <form method="post"
                   action="{% if is_favourite %}
@@ -460,19 +715,17 @@
         </div>
 
         <aside class="project-sidebar">
-
             <div class="author-info">
                 <img src="/images/Без%20названия.png" alt="Аватар Автора">
                 <h4>Автор проєкту</h4>
-                <p style="font-size: 14px; color: #777;">Інформація про автора</p>
-                <a href="#user_profile.html" class="cta-btn">Профіль Автора</a>
-                <a href="mailto:author@example.com" class="cta-btn" style="background: #4caf50;">Зв'язатися</a>
+                <p class="author-bio">Творча людина з багаторічним досвідом у розробці інноваційних проектів</p>
+                <a href="#user_profile.html" class="cta-btn">👤 Профіль Автора</a>
+                <a href="mailto:author@example.com" class="cta-btn secondary">📧 Зв'язатися</a>
             </div>
 
-            <section class="description-block">
-                <h3>Додаткова інформація</h3>
-                <p style="font-size: 14px;">Тут може бути додаткова інформація про проєкт, завантаження чи інші
-                    деталі.</p>
+            <section class="content-block">
+                <h3>ℹ️ Додаткова інформація</h3>
+                <p>Тут може бути додаткова інформація про проєкт, завантаження чи інші деталі.</p>
             </section>
         </aside>
     </div>

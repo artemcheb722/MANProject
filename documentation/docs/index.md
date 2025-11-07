@@ -1,25 +1,32 @@
-## Project Overview
+# 🚀 Projectory - Project Sharing Platform
 
-This project is a web application designed to create and display a list of restaurants. Users can browse detailed information about restaurants, including descriptions, menus, photos, and reviews.
+## 📖 Project Overview
 
----
-
-### What the project does
-- Allows users to search and explore restaurants.
-- Displays detailed information for each restaurant.
-- Provides the ability to leave comments and reviews (if applicable).
-- Helps users choose the right dining place based on comprehensive information.
-
+**Projectory** is an innovative web platform designed for showcasing, discussing, and collaborating on creative and technical projects. Our service brings talented people together, allowing them to share their work, receive feedback, and find like-minded collaborators.
 
 ---
 
-### Project Goal
-
-To build a user-friendly and informative platform that helps people quickly find restaurants and access all the necessary information in one place.
-
----
+## 🎯 Core Purpose
 
 ### Target Audience
-- People looking for interesting restaurants to visit.
-- Users who want to read reviews and menus before visiting.
-- Food enthusiasts and travelers.
+- **👨‍💻 Developers** - Showcase pet projects and portfolios
+- **🎨 Designers** - Present creative works
+- **🏗️ Architects** - Display 3D models and architectural projects
+- **📚 Students** - Share academic projects and research
+- **💼 Professionals** - Build professional portfolios
+
+---
+
+## ✨ Key Features
+
+### 🏠 **Homepage**
+- Modern, welcoming design with motivational messaging
+- Quick access to registration and project catalog
+- Engaging call-to-action for new users
+
+### 📂 **Project Catalog**
+```html
+• Smart category-based filtering system
+• Responsive project card grid layout
+• Visual publication time display
+• Quick project overview capability

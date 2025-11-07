@@ -28,6 +28,7 @@ async def create_project(
         description: str = Form(...),
         technologies: str = Form(...),
         detailed_description: str = Form(...),
+        user: int = Depends(get_current_user),
         session: AsyncSession = Depends(get_async_session)
 ) -> ProjectSchema:
     project_uuid = uuid.uuid4()
@@ -38,7 +39,7 @@ async def create_project(
         url = await s3_storage.upload_product_image(image, restaurant_uuid=project_uuid)
         images_urls.append(url)
 
-    created_project = await  create_project_in_db(project_uuid=project_uuid, project_name=name, category=category,
+    created_project = await  create_project_in_db(user=user,project_uuid=project_uuid, project_name=name, category=category,
                                                   description=description, technologies=technologies,
                                                   detailed_description=detailed_description,
                                                   main_image=main_image, images=images_urls,

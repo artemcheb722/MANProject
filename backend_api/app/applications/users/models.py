@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from sqlalchemy import JSON
 from sqlalchemy import String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from typing import List, Dict
 from database.base_models import Base
@@ -29,6 +29,12 @@ class User(Base):
     subscriptions: Mapped[int] = mapped_column(default=0)
 
     comments: Mapped[List[Dict]] = mapped_column(MutableList.as_mutable(JSON),default=list,nullable=True)
+
+    projects: Mapped[List["Project"]] = relationship(
+        "Project",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
 
 
 
