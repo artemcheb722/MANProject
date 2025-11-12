@@ -1,9 +1,11 @@
 from pydantic import BaseModel, Field
 from enum import StrEnum
 from datetime import datetime
-
+from applications.Projects.models_restaurants import Project
 from pydantic import BaseModel, Field
 from typing import Annotated, Optional
+
+
 
 class ProjectSchema(BaseModel):
     id: int
@@ -15,7 +17,7 @@ class ProjectSchema(BaseModel):
     main_image: str
     created_at: datetime
     images: list[str]
-    user: int
+    user_id: int
 
     class Config:
         from_attributes = True

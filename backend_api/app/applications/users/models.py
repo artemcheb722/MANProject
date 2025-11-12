@@ -33,7 +33,8 @@ class User(Base):
     projects: Mapped[List["Project"]] = relationship(
         "Project",
         back_populates="user",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        lazy="selectin"
     )
 
 

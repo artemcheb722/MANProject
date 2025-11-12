@@ -26,7 +26,7 @@ class Project(ModelCommonMixin, Base):
     main_image: Mapped[str] = mapped_column(nullable=True)
     images: Mapped[list[str]] = mapped_column(ARRAY(String), default=list, nullable=True)
     detailed_description: Mapped[str] = mapped_column(Text, nullable=True)
-    user = relationship("User", back_populates="projects")
+    user = relationship("User", back_populates="projects", lazy="selectin")
 
     comments_relation = relationship(
         "ProjectComments",
