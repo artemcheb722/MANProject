@@ -200,3 +200,35 @@ async def edit_users_profile_with_avatar(access_token: str, profile_description:
             timeout=30.0
         )
         return response.json()
+
+async def create_projects(access_token: str, main_image: UploadFile, images: list[UploadFile],
+                          name: str, category: str, description: str,
+                          technologies: str, detailed_description: str):
+    async with httpx.AsyncClient() as client:
+        data = {
+            'name': name,
+            'category': category,
+            'description': description,
+            'technologies': technologies,
+            'detailed_description': detailed_description
+        }
+
+        main_image_content = await main_image.read()
+        files = {
+            'main_image': (main_image.filename, main_image_content, main_image.content_type)
+        }
+
+        for i, image in enumerate(images):
+            image_content = await image.read()
+            files[f'images'] = (image.filename, image_content, image.content_type)
+
+        response = await client.post(
+            url=f'{settings.BACKEND_API}/projects/create',
+            data=data,
+            files=files,
+            headers={
+                'Authorization': f'Bearer {access_token}',
+            },
+            timeout=30.0
+        )
+        return response.json()

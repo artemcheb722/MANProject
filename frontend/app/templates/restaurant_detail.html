@@ -694,7 +694,9 @@
                 </div>
             {% else %}
                 <div class="alert alert-warning">
-                    Щоб залишати свої коментарі, будь ласка, <a href="{{ url_for('login') }}" style="color: #0078ff; font-weight: 600;">увійдіть в акаунт</a>.
+                    Щоб залишати свої коментарі, будь ласка, <a href="{{ url_for('login') }}"
+                                                                style="color: #0078ff; font-weight: 600;">увійдіть в
+                    акаунт</a>.
                 </div>
             {% endif %}
 
@@ -716,9 +718,17 @@
 
         <aside class="project-sidebar">
             <div class="author-info">
-                <img src="/images/Без%20названия.png" alt="Аватар Автора">
-                <h4>Автор проєкту</h4>
-                <p class="author-bio">Творча людина з багаторічним досвідом у розробці інноваційних проектів</p>
+                <div class="author-info">
+
+                    {% if project.author.user_avatar %}
+                        <img src="{{ project.author.user_avatar }}" alt="Аватар {{ project.author.name }}"
+                             class="author-avatar">
+                    {% endif %}
+
+                    <h4>{{ project.author.name }}</h4>
+
+
+                </div>
                 <a href="#user_profile.html" class="cta-btn">👤 Профіль Автора</a>
                 <a href="mailto:author@example.com" class="cta-btn secondary">📧 Зв'язатися</a>
             </div>

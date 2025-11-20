@@ -1,15 +1,31 @@
-
-
 {% extends "components/base.html" %}
 
-
 {% block content %}
-
-    {% include "components/restaurants.html" %}
     {% if show_not_found %}
-        </br>
-        <div class="alert alert-danger" role="alert">
-            Такого ресторану не знайдено, перевірте, чи правильно ви написали назву.
+    <div class="container-fluid d-flex align-items-center justify-content-center" style="min-height: 70vh;">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg border-0 text-center">
+                    <div class="card-body py-5">
+                        <div class="mb-4">
+                            <i class="fas fa-search fa-4x text-muted"></i>
+                        </div>
+                        <h3 class="card-title text-danger mb-3">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Проєкт не знайдено
+                        </h3>
+                        <div class="mt-4">
+                            <a href="/" class="btn btn-primary btn-lg">
+                                <i class="fas fa-home me-2"></i>
+                                Повернутися на головну
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+    {% else %}
+        {% include "components/restaurants.html" %}
     {% endif %}
 {% endblock %}

@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 
 from backend_api.api import get_current_user_with_token, login_user, get_projects, get_project, get_user_info, \
-    get_project_by_category, get_users_info_for_account, edit_users_profile,edit_users_profile_with_avatar
+    get_project_by_category, get_users_info_for_account, edit_users_profile,edit_users_profile_with_avatar, create_projects
 import humanize
 from datetime import datetime
 from fastapi.responses import HTMLResponse
@@ -150,7 +150,7 @@ async def remove_from_favourite(
     )
 
 
-@router.get('/restaurants/{restaurant_id}')
+@router.get('/restaurants/{project_id}')
 async def restaurant_detail(
         request: Request,
         project_id: int,
@@ -158,11 +158,14 @@ async def restaurant_detail(
 ):
     project = await get_project(project_id)
 
+    author_profile_url = f"/user/{project['author']['id']}"
+
     context = {
         'request': request,
         'project': project,
         'user': user if user.get("name") else None,
-        'is_favourite': False
+        'is_favourite': False,
+        'author_profile_url': author_profile_url
     }
 
     token = user.get("token")
@@ -260,16 +263,37 @@ async def get_users_data(request: Request):
             {"request": request, "error": "Потрібна авторизація!"}
         )
 
-    user_info = await get_users_info_for_account(access_token)
+    try:
+        user_info = await get_users_info_for_account(access_token)
+        user_info["projects_count"] = len(user_info.get("projects", []))
+        user_info["following"] = user_info.get("subscriptions", 0)
 
-    return templates.TemplateResponse(
-        "user_profile.html",
-        {
-            "request": request,
-            "user": user_info
-        }
-    )
+        return templates.TemplateResponse(
+            "user_profile.html",
+            {
+                "request": request,
+                "user": user_info
+            }
+        )
 
+    except Exception as e:
+        print(f"Error in get_users_data: {e}")
+        return templates.TemplateResponse(
+            "user_profile.html",
+            {
+                "request": request,
+                "user": {
+                    "name": "Користувач",
+                    "email": "",
+                    "projects": [],
+                    "profile_description": "Не вдалося завантажити дані профілю",
+                    "user_avatar": None,
+                    "projects_count": 0,
+                    "followers": 0,
+                    "following": 0
+                }
+            }
+        )
 
 @router.get("/Upgrade_profile_page", response_class=HTMLResponse)
 async def settings_page(request: Request, user: dict = Depends(get_current_user_with_token)):
@@ -321,3 +345,53 @@ async def Edit_users_profile(
             "user": user
         }
     )
+
+
+@router.post("/create_project")
+async def create_project_endpoint(
+        request: Request,
+        name: str = Form(...),
+        category: str = Form(...),
+        description: str = Form(...),
+        technologies: str = Form(...),
+        detailed_description: str = Form(...),
+        main_image: UploadFile = File(...),
+        images: list[UploadFile] = File(None)
+):
+
+    access_token = request.cookies.get("access_token")
+
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    try:
+        new_project = await create_projects(
+            access_token=access_token,
+            name=name,
+            category=category,
+            description=description,
+            technologies=technologies,
+            detailed_description=detailed_description,
+            main_image=main_image,
+            images=images or []
+        )
+
+
+        user_data = await get_current_user_with_token(access_token)
+        return templates.TemplateResponse(
+            "user_profile.html",
+            {
+                "request": request,
+                "new_project": new_project,
+                "author_profile_url": user_data
+            }
+        )
+
+    except Exception as e:
+        print(e)
+        return templates.TemplateResponse(
+            {
+                "request": request,
+                "error_message": "Ошибка при создании проекта"
+            }
+        )
