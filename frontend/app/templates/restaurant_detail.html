@@ -729,8 +729,7 @@
 
 
                 </div>
-                <a href="#user_profile.html" class="cta-btn">👤 Профіль Автора</a>
-                <a href="mailto:author@example.com" class="cta-btn secondary">📧 Зв'язатися</a>
+                <a href="{{ url_for('get_user_profile_by_id', user_id=project.author.id) }}" class="view-btn">Профіль користувача</a>
             </div>
 
             <section class="content-block">

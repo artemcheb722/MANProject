@@ -3,7 +3,7 @@ import uuid
 from fastapi import APIRouter, Depends, status, HTTPException, Request, BackgroundTasks, Header, Body, UploadFile, File, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from applications.users.crud import create_user_in_db, get_user_by_email, activate_user_account
+from applications.users.crud import create_user_in_db, get_user_by_email, activate_user_account, get_project_by_pk
 from applications.users.shemas import BaseUserInfo, RegisterUserFields, NewComment, UserSchema, UserUpdateProfile
 from database.session_dependencies import get_async_session
 from services.rabbit.constants import SupportedQueues
@@ -68,6 +68,14 @@ async def get_my_info(
     return current_user
 
 
+
+@router_users.get("/{pk}", response_model=UserSchema)
+async def get_user_by_pk(pk: int, session: AsyncSession = Depends(get_async_session)):
+    user = await get_project_by_pk(pk, session)
+    if not user:
+        raise HTTPException(status_code=404, detail="user not found")
+
+    return user
 
 
 @router_users.patch("/settings_upgrade_profile")

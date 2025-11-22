@@ -3,7 +3,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 
 from backend_api.api import get_current_user_with_token, login_user, get_projects, get_project, get_user_info, \
-    get_project_by_category, get_users_info_for_account, edit_users_profile,edit_users_profile_with_avatar, create_projects
+    get_project_by_category, get_users_info_for_account, edit_users_profile, edit_users_profile_with_avatar, \
+    create_projects, get_user_by_pk
+
 import humanize
 from datetime import datetime
 from fastapi.responses import HTMLResponse
@@ -158,14 +160,13 @@ async def restaurant_detail(
 ):
     project = await get_project(project_id)
 
-    author_profile_url = f"/user/{project['author']['id']}"
+
 
     context = {
         'request': request,
         'project': project,
         'user': user if user.get("name") else None,
         'is_favourite': False,
-        'author_profile_url': author_profile_url
     }
 
     token = user.get("token")
@@ -283,10 +284,10 @@ async def get_users_data(request: Request):
             {
                 "request": request,
                 "user": {
-                    "name": "Користувач",
+                    "name": user_info.name,
                     "email": "",
                     "projects": [],
-                    "profile_description": "Не вдалося завантажити дані профілю",
+                    "profile_description": "Користувач ще не додав опису",
                     "user_avatar": None,
                     "projects_count": 0,
                     "followers": 0,
@@ -294,6 +295,43 @@ async def get_users_data(request: Request):
                 }
             }
         )
+
+
+@router.get("/user/{user_id}", response_class=HTMLResponse)
+async def get_user_profile_by_id(request: Request, user_id: int):
+    try:
+        user_info = await get_user_by_pk(user_id)
+
+        user_info["projects_count"] = len(user_info.get("projects", []))
+        user_info["following"] = user_info.get("subscriptions", 0)
+
+        return templates.TemplateResponse(
+            "user_profile.html",
+            {
+                "request": request,
+                "user": user_info
+            }
+        )
+
+    except Exception as e:
+        print(f"Error in get_user_profile_by_id: {e}")
+        return templates.TemplateResponse(
+            "user_profile.html",
+            {
+                "request": request,
+                "user": {
+                    "name": "Користувач не знайдений",
+                    "email": "",
+                    "projects": [],
+                    "profile_description": "Цей користувач не існує",
+                    "user_avatar": None,
+                    "projects_count": 0,
+                    "followers": 0,
+                    "following": 0
+                }
+            }
+        )
+
 
 @router.get("/Upgrade_profile_page", response_class=HTMLResponse)
 async def settings_page(request: Request, user: dict = Depends(get_current_user_with_token)):
@@ -315,8 +353,6 @@ async def Edit_users_profile(
         profile_description: str = Form(None),
         email: str = Form(None),
         user_avatar: UploadFile = File(None)):
-
-
     if user_avatar and user_avatar.filename:
         Upgraded_profile = await edit_users_profile_with_avatar(
             name=name,
@@ -358,7 +394,6 @@ async def create_project_endpoint(
         main_image: UploadFile = File(...),
         images: list[UploadFile] = File(None)
 ):
-
     access_token = request.cookies.get("access_token")
 
     if not access_token:
@@ -376,7 +411,6 @@ async def create_project_endpoint(
             images=images or []
         )
 
-
         user_data = await get_current_user_with_token(access_token)
         return templates.TemplateResponse(
             "user_profile.html",
@@ -392,6 +426,6 @@ async def create_project_endpoint(
         return templates.TemplateResponse(
             {
                 "request": request,
-                "error_message": "Ошибка при создании проекта"
+                "error_message": "Помилка при створенні проєкту"
             }
         )

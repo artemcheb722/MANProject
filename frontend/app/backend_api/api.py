@@ -232,3 +232,10 @@ async def create_projects(access_token: str, main_image: UploadFile, images: lis
             timeout=30.0
         )
         return response.json()
+
+async def get_user_by_pk(pk: int):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            url=f'{settings.BACKEND_API}/users/{pk}',
+        )
+        return response.json()

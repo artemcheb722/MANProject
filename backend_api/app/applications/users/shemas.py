@@ -56,7 +56,7 @@ class UserSchema(BaseModel):
     followers: int
     profile_description: Optional[str] = None
     subscriptions: int
-    user_avatar: str
+    user_avatar: Optional[str] = None
     projects: List[ProjectSchema]
 
 class UserUpdateProfile(BaseModel):
