@@ -154,24 +154,23 @@ async def get_users_info_for_account(access_token: str):
         return user_info
 
 ## TO ADD WITHOUT AVA
-async def edit_users_profile(access_token: str, profile_description: str, name: str, email: str, user_avatar: str, token: str):
+async def edit_users_profile(access_token: str, profile_description: str, name: str, email: str,
+                             token: str):
     async with httpx.AsyncClient() as client:
+        data = {
+            'name': name or "",
+            'profile_description': profile_description or "",
+            'email': email or "",
+        }
+
         response = await client.patch(
             url=f'{settings.BACKEND_API}/users/settings_upgrade_profile',
-            json={
-                'access_token': access_token,
-                'profile_description': profile_description,
-                'name': name,
-                'email': email,
-                'user_avatar': user_avatar
-            },
+            data=data,
             headers={
                 'Authorization': f'Bearer {access_token}',
-                'Content-Type': 'application/json'
             }
         )
-        new_description = response.json()
-        return new_description
+        return response.json()
 
 ## TO ADD WITH AVA
 async def edit_users_profile_with_avatar(access_token: str, profile_description: str, name: str, email: str,
@@ -179,9 +178,8 @@ async def edit_users_profile_with_avatar(access_token: str, profile_description:
     async with httpx.AsyncClient() as client:
 
         data = {
-            'access_token': access_token or "",
-            'profile_description': profile_description or "",
             'name': name or "",
+            'profile_description': profile_description or "",
             'email': email or "",
         }
 
@@ -201,16 +199,18 @@ async def edit_users_profile_with_avatar(access_token: str, profile_description:
         )
         return response.json()
 
+
 async def create_projects(access_token: str, main_image: UploadFile, images: list[UploadFile],
                           name: str, category: str, description: str,
-                          technologies: str, detailed_description: str):
+                          technologies: str, detailed_description: str, Additional_information: str):
     async with httpx.AsyncClient() as client:
         data = {
             'name': name,
             'category': category,
             'description': description,
             'technologies': technologies,
-            'detailed_description': detailed_description
+            'detailed_description': detailed_description,
+            'Additional_information': Additional_information
         }
 
         main_image_content = await main_image.read()
@@ -239,3 +239,24 @@ async def get_user_by_pk(pk: int):
             url=f'{settings.BACKEND_API}/users/{pk}',
         )
         return response.json()
+
+async def like_project(project_id: int):
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            url=f'{settings.BACKEND_API}/projects/like/{project_id}'
+        )
+        return response
+
+async def unlike_project(project_id: int):
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            url=f'{settings.BACKEND_API}/projects/unlike/{project_id}'
+        )
+        return response
+
+async def get_all_likes_for_project(project_id: int):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            url=f'{settings.BACKEND_API}/projects/likes/{project_id}'
+        )
+        return response

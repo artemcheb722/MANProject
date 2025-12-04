@@ -103,8 +103,7 @@ async def upgrade_users_profile(
         current_user.email = email
         updated = True
 
-
-    if user_avatar and user_avatar.filename:
+    if user_avatar is not None and user_avatar.filename:
         try:
             user_uuid = str(uuid.uuid4())
             avatar_url = await s3_storage.upload_user_avatar(user_avatar, user_uuid)

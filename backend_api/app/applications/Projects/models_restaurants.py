@@ -26,8 +26,9 @@ class Project(ModelCommonMixin, Base):
     main_image: Mapped[str] = mapped_column(nullable=True)
     images: Mapped[list[str]] = mapped_column(ARRAY(String), default=list, nullable=True)
     detailed_description: Mapped[str] = mapped_column(Text, nullable=True)
+    Additional_information: Mapped[str] = mapped_column(Text, nullable=True)
     user = relationship("User", back_populates="projects", lazy="selectin")
-
+    count_of_likes: Mapped[int] = mapped_column(default=0, nullable=True)
     comments_relation = relationship(
         "ProjectComments",
         back_populates="project",

@@ -139,53 +139,49 @@
     </style>
 </head>
 <body>
-
 <div class="form-container">
     <h2>Редагування профілю</h2>
 
     {% if users_upgrade and users_upgrade.status == "200" %}
-    <div class="success-message">
-        ✅ Профіль успішно оновлено!
-    </div>
+        <div class="success-message">
+            ✅ Профіль успішно оновлено!
+        </div>
     {% endif %}
 
-    {% if users_upgrade and users_upgrade.detail %}
-    <div class="error-message">
-        ❌ {{ users_upgrade.detail }}
-    </div>
+    {% if users_upgrade and users_upgrade.detail and users_upgrade.status != "200" %}
+        <div class="error-message">
+            ❌ {{ users_upgrade.detail }}
+        </div>
     {% endif %}
-
 
     <form method="post" action="/settings_upgrade_profile" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="username">Ім'я користувача *</label>
+            <label for="username">Ім'я користувача </label>
             <input type="text" id="username" name="name"
-                   value="{% if users_upgrade and users_upgrade.updated_user %}{{ users_upgrade.updated_user.name }}{% else %}{{ user.name or '' }}{% endif %}" required>
+                   value="{{ user.name or '' }}" required>
         </div>
 
         <div class="form-group">
             <label for="description">Опис профілю</label>
-            <textarea id="description" name="profile_description" rows="3"
-                      placeholder="Розкажіть трохи про себе">{% if users_upgrade and users_upgrade.updated_user %}{{ users_upgrade.updated_user.description }}{% else %}{{ user.profile_description or '' }}{% endif %}</textarea>
+            <textarea id="profile_description" name="profile_description"
+                      placeholder="Розкажіть трохи про себе">{{ user.profile_description or '' }}</textarea>
         </div>
 
         <div class="form-group">
             <label for="email">Електронна пошта *</label>
             <input type="email" id="email" name="email"
-                   value="{% if users_upgrade and users_upgrade.updated_user %}{{ users_upgrade.updated_user.email }}{% else %}{{ user.email or '' }}{% endif %}" required>
+                   value="{{ user.email or '' }}" required>
         </div>
-
 
         <div class="form-group">
             <label for="user_avatar">Аватар профілю</label>
             <input type="file" id="user_avatar" name="user_avatar" accept="image/*">
 
-
             {% if user.user_avatar %}
-            <div class="avatar-preview">
-                <div class="current-avatar">Поточний аватар:</div>
-                <img src="{{ user.user_avatar }}" alt="Поточний аватар">
-            </div>
+                <div class="avatar-preview">
+                    <div class="current-avatar">Поточний аватар:</div>
+                    <img src="{{ user.user_avatar }}" alt="Поточний аватар">
+                </div>
             {% endif %}
         </div>
 
@@ -197,6 +193,5 @@
 </div>
 
 <a href="/user_info" class="back-link">← Повернутися до мого профілю</a>
-
 </body>
 </html>

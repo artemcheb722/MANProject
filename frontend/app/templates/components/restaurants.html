@@ -492,7 +492,11 @@
                         <div class="project-category">{{ project.category }}</div>
                         <h4>{{ project.project_name }}</h4>
                         <p class="project-description">{{ project.description }}</p>
-                        <a href="{{ url_for('restaurant_detail', project_id=project.id) }}" class="view-btn">Дізнатися більше</a>
+
+
+
+                        <a href="{{ url_for('restaurant_detail', project_id=project.id) }}" class="view-btn">Дізнатися
+                            більше</a>
                     </div>
                 </div>
             {% endfor %}
