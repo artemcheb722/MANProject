@@ -8,7 +8,6 @@ from sqlalchemy import select
 from applications.auth.password_handler import PasswordEncrypt
 from applications.users.models import User
 
-
 async def create_user_in_db(email, name, password, session: AsyncSession) -> User:
     hashed_password = await PasswordEncrypt.get_password_hash(password)
     new_user = User(email=email,hashed_password=hashed_password,name=name)
@@ -33,3 +32,8 @@ async def activate_user_account(user_uuid, session: AsyncSession) -> None:
     user.is_verified = True
     session.add(user)
     await session.commit()
+
+async def get_project_by_pk(pk: int, session: AsyncSession) -> User | None:
+    query = select(User).filter(User.id == pk)
+    result = await session.execute(query)
+    return result.scalar_one_or_none()

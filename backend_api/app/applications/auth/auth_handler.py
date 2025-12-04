@@ -32,7 +32,7 @@ class AuthHandler:
 
     async def generate_token_pairs(self, user_email) -> dict:
         payload = {"user_email": user_email}
-        access_token = await self.create_token(payload, timedelta(minutes=20))
+        access_token = await self.create_token(payload, timedelta(minutes=60))
         refresh_token = await self.create_token(payload, timedelta(days=1))
         return {"access_token": access_token, "refresh_token": refresh_token}
 

@@ -1,51 +1,191 @@
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="main-navbar">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="/main_page">
-            Projectory
+            <span class="brand-gradient">Projectory</span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
             <span class="navbar-toggler-icon"></span>
         </button>
+        <div class="d-flex align-items-center gap-3">
+            <form class="d-flex align-items-center" method="post" action="{{ url_for('index') }}">
+                <input name="query" class="form-control" type="search" placeholder="Шукати проєкт..."
+                       aria-label="Search">
+                <button class="btn btn-light" type="submit">Шукати</button>
+            </form>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <div class="navbar-nav ms-auto d-flex align-items-center flex-row gap-3">
+                    <a class="nav-link nav-link-modern" href="{{ url_for('index') }}">
+                        <i class="nav-icon"></i>
+                        Каталог проєктів
+                    </a>
 
-        <div class="collapse navbar-collapse" id="navbarContent">
-            <div class="navbar-nav ms-auto d-flex align-items-center flex-row gap-3">
-                <a class="nav-link" href="{{ url_for('index') }}">Каталог проєктів</a>
-                <a class="nav-link" href="{{ url_for('get_users_data') }}">Мій акаунт</a>
-                <div class="nav-item">
-                    {% include "components/login_comp.html" %}
+                    <a class="nav-link nav-link-modern" href="{{ url_for('get_users_data') }}">
+                        <i class="nav-icon"></i>
+                        Мій акаунт
+                    </a>
+                    <div class="nav-item">
+                        {% include "components/login_comp.html" %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 </nav>
 
 <style>
-#main-navbar {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    padding: 0.8rem 0;
-}
+    #main-navbar {
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.8rem 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
 
-#main-navbar .navbar-brand {
-    font-size: 1.8rem;
-    font-weight: 700;
-    background: linear-gradient(45deg, #3498db, #2ecc71);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-right: 2rem;
-}
+    #main-navbar.scrolled {
+        background: rgba(15, 23, 42, 0.98);
+        padding: 0.5rem 0;
+    }
 
-#main-navbar .nav-link {
-    color: #ecf0f1 !important;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
+    .brand-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
 
-#main-navbar .nav-link:hover {
-    color: #3498db !important;
-    background: rgba(255, 255, 255, 0.1);
-}
+    .nav-link-modern {
+        color: #e2e8f0 !important;
+        font-weight: 500;
+        padding: 0.5rem 1rem !important;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .nav-link-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .nav-link-modern:hover::before {
+        left: 100%;
+    }
+
+    .nav-link-modern:hover {
+        color: #ffffff !important;
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .nav-link-modern:active {
+        transform: translateY(0);
+    }
+
+    .nav-icon {
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        background: #667eea;
+        border-radius: 50%;
+        margin-right: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-link-modern:hover .nav-icon {
+        background: #764ba2;
+        transform: scale(1.5);
+    }
+
+    .navbar-toggler {
+        border: none;
+        padding: 0.25rem 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.5);
+    }
+
+    .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        transition: all 0.3s ease;
+    }
+
+    .navbar-toggler:hover .navbar-toggler-icon {
+        transform: scale(1.1);
+    }
+
+
+    @media (max-width: 991.98px) {
+        .navbar-collapse {
+            background: rgba(15, 23, 42, 0.98);
+            border-radius: 16px;
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-link-modern {
+            margin: 0.25rem 0;
+            text-align: center;
+        }
+    }
+
+
+    .navbar-nav .nav-item {
+        animation: slideIn 0.5s ease forwards;
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+
+    @keyframes slideIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 </style>
+
+<script>
+
+    window.addEventListener('scroll', function () {
+        const navbar = document.getElementById('main-navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const navLinks = document.querySelectorAll('.nav-link-modern');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = this.getAttribute('href');
+
+                // Добавляем анимацию клика
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                    window.location.href = target;
+                }, 150);
+            });
+        });
+    });
+</script>

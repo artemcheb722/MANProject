@@ -5,258 +5,462 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Інфо о ресторанах</title>
     <style>
+        :root {
+            --primary-color: #0078ff;
+            --primary-dark: #005fd4;
+            --gradient: linear-gradient(135deg, #0078ff 0%, #005fd4 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
 
         body {
             margin: 0;
             font-family: "Inter", sans-serif;
-            background: #f7f8fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
             color: #222;
+            min-height: 100vh;
         }
 
+        /* Modern Navbar */
         .navbar {
             width: 100%;
-            background: linear-gradient(90deg, #0078ff, #005fd4);
+            background: var(--gradient);
             color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 40px;
+            padding: 12px 40px;
             box-sizing: border-box;
             position: fixed;
             top: 0;
             left: 0;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            height: 60px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            height: 70px;
+            backdrop-filter: blur(10px);
         }
 
         .nav-logo {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 26px;
+            font-weight: 800;
             text-decoration: none;
             color: white;
             letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .nav-right {
             display: flex;
-            gap: 30px;
+            gap: 35px;
         }
 
         .nav-right a {
             color: white;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 16px;
-            padding: 5px 0;
-            transition: 0.3s;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
             position: relative;
+            border-radius: 25px;
+        }
+
+        .nav-right a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-right a:hover::before {
+            opacity: 1;
         }
 
         .nav-right a:hover {
-            color: #ffeb3b;
-            text-shadow: 0 0 5px rgba(255, 235, 59, 0.4);
+            transform: translateY(-2px);
+            text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
         }
 
+        /* Catalog Layout */
         .catalog-page {
             display: flex;
-            margin-top: 60px;
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
         }
 
+        /* Modern Sidebar */
         .sidebar {
-            width: 180px;
-            background: white;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
-            padding: 20px 15px;
+            width: 280px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 30px 25px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 20px;
             position: fixed;
-            top: 60px;
+            top: 70px;
             bottom: 0;
             left: 0;
             overflow-y: auto;
-            z-index: 99;
-        }
-
-        .sidebar h3 {
-            font-size: 15px;
-            margin-bottom: 10px;
-            color: #0078ff;
-            font-weight: 600;
-            padding-top: 5px;
-        }
-
-        .sidebar button {
-            background: #f0f2f5;
-            border: none;
-            padding: 10px 12px;
-            border-radius: 10px;
-            text-align: left;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .sidebar button:hover {
-            background: #0078ff;
-            color: white;
-        }
-
-        .content {
-            margin-left: 210px;
-            padding: 30px 40px;
-            flex: 1;
-        }
-
-        .content h2 {
-            margin-bottom: 25px;
-            font-size: 24px;
-            color: #333;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-        }
-
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-        }
-
-        .project-card {
-            background: white;
-            border-radius: 18px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .project-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .project-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .project-info {
-            padding: 20px;
-        }
-
-        .project-info h4 {
-            margin: 0 0 10px;
-            font-size: 18px;
-            color: #0078ff;
-        }
-
-        .project-info p {
-            font-size: 14px;
-            color: #666;
-            margin: 0 0 15px;
-        }
-
-        .view-btn {
-            background: #0078ff;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            display: inline-block;
-            transition: background 0.2s;
-        }
-
-        .view-btn:hover {
-            background: #005fd4;
-        }
-
-
-        .sidebar {
-            width: 230px;
-            background: #ffffff;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
-            padding: 25px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            position: fixed;
-            top: 60px;
-            bottom: 0;
-            left: 0;
-            overflow-y: auto;
-            border-right: 1px solid #eee;
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
             z-index: 10;
+            box-shadow: var(--shadow);
         }
 
-
         .sidebar h3 {
-            font-size: 16px;
-            margin-bottom: 10px;
-            color: #0078ff;
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-weight: 600;
+            font-weight: 700;
+            text-align: center;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(0, 120, 255, 0.1) 0%, rgba(0, 95, 212, 0.1) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 120, 255, 0.2);
         }
 
         .sidebar form {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .sidebar button {
-            background: #f2f4f8;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid transparent;
+            padding: 14px 20px;
+            border-radius: 14px;
             text-align: left;
             font-size: 15px;
             cursor: pointer;
-            transition: all 0.25s ease;
-            font-weight: 500;
+            transition: all 0.3s ease;
+            font-weight: 600;
             color: #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .sidebar button:hover::before {
+            left: 0;
         }
 
         .sidebar button:hover {
-            background: #0078ff;
-            color: #fff;
-            transform: translateX(5px);
-            box-shadow: 0 3px 8px rgba(0, 120, 255, 0.3);
+            color: white;
+            transform: translateX(8px);
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 120, 255, 0.3);
         }
 
-        .sidebar button:active {
-            transform: scale(0.98);
+        /* Main Content */
+        .content {
+            margin-left: 300px;
+            padding: 40px;
+            flex: 1;
         }
 
+        .content h2 {
+            margin-bottom: 30px;
+            font-size: 32px;
+            font-weight: 800;
+            color: #333;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 15px;
+            background: linear-gradient(135deg, #333 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Modern Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .project-card {
+            background: var(--glass-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .project-image-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .project-card:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Красивое время в карточке */
+        .project-time {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .project-time::before {
+            content: '🕒';
+            font-size: 11px;
+        }
+
+        .project-info {
+            padding: 25px;
+            position: relative;
+        }
+
+        .project-category {
+            display: inline-block;
+            background: var(--gradient);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 120, 255, 0.3);
+        }
+
+        .project-info h4 {
+            margin: 0 0 12px 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .project-description {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 20px 0;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .view-btn {
+            background: var(--gradient);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 120, 255, 0.3);
+        }
+
+        .view-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 120, 255, 0.4);
+        }
+
+        /* Responsive Design */
         @media (max-width: 900px) {
             .sidebar {
                 position: static;
-                width: auto;
+                width: 100%;
                 flex-direction: row;
                 justify-content: center;
                 flex-wrap: wrap;
                 box-shadow: none;
                 border-right: none;
                 border-bottom: 1px solid #eee;
-                padding: 15px;
-                background: #fff;
+                padding: 20px;
+                gap: 10px;
             }
 
             .sidebar h3 {
                 width: 100%;
                 text-align: center;
-                margin-bottom: 5px;
+                margin-bottom: 10px;
+                font-size: 16px;
+            }
+
+            .sidebar form {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
             }
 
             .sidebar button {
                 flex: 1;
-                min-width: 90px;
+                min-width: 120px;
                 text-align: center;
-                padding: 8px 10px;
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+
+            .sidebar button:hover {
+                transform: translateY(-3px);
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 25px;
+            }
+
+            .projects-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+            }
+
+            .navbar {
+                padding: 12px 20px;
+            }
+
+            .nav-right {
+                gap: 15px;
+            }
+
+            .nav-right a {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content {
+                padding: 15px;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-card {
+                margin-bottom: 15px;
+            }
+
+            .navbar {
+                height: 60px;
+                padding: 10px 15px;
+            }
+
+            .nav-logo {
+                font-size: 20px;
+            }
+
+            .nav-right {
+                gap: 10px;
+            }
+
+            .nav-right a {
+                font-size: 12px;
+                padding: 5px 10px;
+            }
+
+            .sidebar {
+                padding: 15px;
+            }
+
+            .sidebar button {
+                min-width: 100px;
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+
+            .project-time {
+                top: 10px;
+                right: 10px;
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+        }
+
+        .project-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
@@ -275,24 +479,29 @@
         </form>
     </aside>
 
-    <man class="content">
+    <main class="content">
         <h2>Каталог проєктів</h2>
         <div class="projects-grid" id="projectsGrid">
             {% for project in restaurants %}
                 <div class="project-card" data-category="{{ project.category|lower }}">
-                    <small class="text-muted">{{ project.created_at|naturaltime }}</small>
-                    <img src="{{ project.main_image }}" alt="{{ project.project_name }}">
+                    <div class="project-image-container">
+                        <img src="{{ project.main_image }}" alt="{{ project.project_name }}">
+                        <div class="project-time">{{ project.created_at|naturaltime }}</div>
+                    </div>
                     <div class="project-info">
+                        <div class="project-category">{{ project.category }}</div>
                         <h4>{{ project.project_name }}</h4>
-                        <p>Категорія: {{ project.category }}</p>
-                        <p>{{ project.description }}</p>
+                        <p class="project-description">{{ project.description }}</p>
+
+
+
                         <a href="{{ url_for('restaurant_detail', project_id=project.id) }}" class="view-btn">Дізнатися
                             більше</a>
                     </div>
                 </div>
             {% endfor %}
         </div>
-    </man>
+    </main>
 </div>
 
 <script>

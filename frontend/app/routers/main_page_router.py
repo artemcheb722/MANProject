@@ -3,7 +3,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 
 from backend_api.api import get_current_user_with_token, login_user, get_projects, get_project, get_user_info, \
-    get_project_by_category, get_users_info_for_account, edit_users_profile,edit_users_profile_with_avatar
+    get_project_by_category, get_users_info_for_account, edit_users_profile, edit_users_profile_with_avatar, \
+    create_projects, get_user_by_pk, like_project, unlike_project, get_all_likes_for_project
+
 import humanize
 from datetime import datetime
 from fastapi.responses import HTMLResponse
@@ -150,32 +152,6 @@ async def remove_from_favourite(
     )
 
 
-@router.get('/restaurants/{restaurant_id}')
-async def restaurant_detail(
-        request: Request,
-        project_id: int,
-        user: dict = Depends(get_current_user_with_token)
-):
-    project = await get_project(project_id)
-
-    context = {
-        'request': request,
-        'project': project,
-        'user': user if user.get("name") else None,
-        'is_favourite': False
-    }
-
-    token = user.get("token")
-    if token:
-        try:
-            context["is_favourite"] = await check_if_favourite(project_id, token)
-        except Exception as e:
-            print(f"[ERROR is_favourite]: {e}")
-            context["is_favourite"] = False
-
-    return templates.TemplateResponse('restaurant_detail.html', context=context)
-
-
 @router.get('/login')
 @router.post('/login')
 async def login(request: Request, user: dict = Depends(get_current_user_with_token), user_email: str = Form(''),
@@ -260,15 +236,73 @@ async def get_users_data(request: Request):
             {"request": request, "error": "Потрібна авторизація!"}
         )
 
-    user_info = await get_users_info_for_account(access_token)
+    try:
+        user_info = await get_users_info_for_account(access_token)
+        user_info["projects_count"] = len(user_info.get("projects", []))
+        user_info["following"] = user_info.get("subscriptions", 0)
 
-    return templates.TemplateResponse(
-        "user_profile.html",
-        {
-            "request": request,
-            "user": user_info
-        }
-    )
+        return templates.TemplateResponse(
+            "user_profile.html",
+            {
+                "request": request,
+                "user": user_info
+            }
+        )
+
+    except Exception as e:
+        print(f"Error in get_users_data: {e}")
+        return templates.TemplateResponse(
+            "user_profile.html",
+            {
+                "request": request,
+                "user": {
+                    "name": "",
+                    "email": "",
+                    "projects": [],
+                    "profile_description": "Користувач ще не додав опису",
+                    "user_avatar": None,
+                    "projects_count": 0,
+                    "followers": 0,
+                    "following": 0
+                }
+            }
+        )
+
+
+@router.get("/user/{user_id}", response_class=HTMLResponse)
+async def get_user_profile_by_id(request: Request, user_id: int):
+    try:
+        user_info = await get_user_by_pk(user_id)
+
+        user_info["projects_count"] = len(user_info.get("projects", []))
+        user_info["following"] = user_info.get("subscriptions", 0)
+
+        return templates.TemplateResponse(
+            "users_profile_1.html",
+            {
+                "request": request,
+                "user": user_info
+            }
+        )
+
+    except Exception as e:
+        print(f"Error in get_user_profile_by_id: {e}")
+        return templates.TemplateResponse(
+            "users_profile_1.html",
+            {
+                "request": request,
+                "user": {
+                    "name": "Користувач не знайдений",
+                    "email": "",
+                    "projects": [],
+                    "profile_description": "Цей користувач не існує",
+                    "user_avatar": None,
+                    "projects_count": 0,
+                    "followers": 0,
+                    "following": 0
+                }
+            }
+        )
 
 
 @router.get("/Upgrade_profile_page", response_class=HTMLResponse)
@@ -283,6 +317,7 @@ async def settings_page(request: Request, user: dict = Depends(get_current_user_
     )
 
 
+
 @router.post("/settings_upgrade_profile")
 async def Edit_users_profile(
         request: Request,
@@ -292,24 +327,23 @@ async def Edit_users_profile(
         email: str = Form(None),
         user_avatar: UploadFile = File(None)):
 
+    if user_avatar is not None and user_avatar.filename:
 
-    if user_avatar and user_avatar.filename:
         Upgraded_profile = await edit_users_profile_with_avatar(
-            name=name,
-            profile_description=profile_description,
-            email=email,
-            user_avatar=user_avatar,
             access_token=user.get("access_token"),
+            name=name,
+            email=email,
+            profile_description=profile_description,
+            user_avatar=user_avatar,
             token=user.get("token")
         )
     else:
 
         Upgraded_profile = await edit_users_profile(
-            name=name,
-            profile_description=profile_description,
-            email=email,
-            user_avatar=None,
             access_token=user.get("access_token"),
+            name=name,
+            email=email,
+            profile_description=profile_description,
             token=user.get("token")
         )
 
@@ -319,5 +353,94 @@ async def Edit_users_profile(
             "request": request,
             "users_upgrade": Upgraded_profile,
             "user": user
+        }
+    )
+
+@router.post("/create_project")
+async def create_project_endpoint(
+        request: Request,
+        name: str = Form(...),
+        category: str = Form(...),
+        description: str = Form(...),
+        technologies: str = Form(...),
+        detailed_description: str = Form(...),
+        main_image: UploadFile = File(...),
+        images: list[UploadFile] = File(None),
+        Additional_information: str = File(...),
+):
+
+    access_token = request.cookies.get("access_token")
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Не авторизований користувач")
+
+    try:
+        new_project = await create_projects(
+            access_token=access_token,
+            name=name,
+            category=category,
+            description=description,
+            technologies=technologies,
+            detailed_description=detailed_description,
+            main_image=main_image,
+            Additional_information=Additional_information,
+            images=images or []
+        )
+
+
+        user_data = await get_current_user_with_token(request)
+
+        return templates.TemplateResponse(
+            "user_profile.html",
+            {
+                "request": request,
+                "user": user_data,
+                "new_project": new_project
+            }
+        )
+
+    except Exception as e:
+        print(f"Error in create_project_endpoint: {e}")
+        return templates.TemplateResponse(
+            "Error.html",
+            {
+                "request": request,
+                "error_message": "Помилка при створенні проєкту"
+            }
+        )
+
+@router.post("/projects/like/{project_id}")
+async def like_projects(project_id: int, request: Request):
+    response = await like_project(project_id)
+    project = await get_project(project_id)
+    return templates.TemplateResponse(
+        "restaurant_detail.html",
+        {
+            "like": response,
+            "request": request,
+            "project": project
+        }
+    )
+
+
+@router.post("/projects/unlike/{project_id}")
+async def unlike_projects(project_id: int, request: Request):
+    response = await unlike_project(project_id)
+    return templates.TemplateResponse(
+        "restaurant_detail.html",
+        {
+            "unlike": response,
+            "request": request
+        }
+    )
+
+
+@router.post("/projects/likes/{project_id}")
+async def get_likes_for_project(project_id: int, request: Request):
+    response = await get_all_likes_for_project(project_id)
+    return templates.TemplateResponse(
+        "restaurant_detail.html",
+        {
+            "likes": response,
+            "request": request
         }
     )

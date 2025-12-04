@@ -2,19 +2,76 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Мій акаунт | MAN Projects</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+    <title>Мій акаунт | Projectory</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Navbar Styles */
+        #main-navbar {
+            background: rgba(15, 23, 42, 0.95) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        #main-navbar.scrolled {
+            background: rgba(15, 23, 42, 0.98) !important;
+            padding: 0.5rem 0;
+        }
+
+        .brand-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-link-modern {
+            color: #e2e8f0 !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-link-modern:hover::before {
+            left: 100%;
+        }
+
+        .nav-link-modern:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Body Styles */
         body {
             margin: 0;
             font-family: "Inter", sans-serif;
             background: #fafafa;
             color: #262626;
-            padding-top: 60px;
+            padding-top: 80px;
         }
 
         .profile-main {
-            max-width: 935px;
+            max-width: 1200px;
             margin: 30px auto;
             padding: 0 20px;
         }
@@ -68,12 +125,24 @@
             font-weight: 500;
             cursor: pointer;
             text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .profile-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .profile-btn.primary {
             background: #0095f6;
             color: #fff;
             border-color: #0095f6;
+        }
+
+        .profile-btn.primary:hover {
+            background: #007acc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 149, 246, 0.3);
         }
 
         .profile-stats {
@@ -117,6 +186,7 @@
             gap: 6px;
             border-top: 1px solid transparent;
             margin-top: -1px;
+            transition: all 0.3s ease;
         }
 
         .profile-tab.active {
@@ -124,80 +194,432 @@
             border-top-color: #262626;
         }
 
+        /* Projects Grid - 4 проекта в ряд */
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 28px;
-            margin-top: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            padding: 20px 0;
         }
 
-        .project-item {
-            aspect-ratio: 1;
-            background: #fff;
-            border: 1px solid #dbdbdb;
-            border-radius: 3px;
+        .project-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             position: relative;
-            cursor: pointer;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.6s ease forwards;
         }
 
-        .project-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .project-overlay {
+        .project-card::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 30px;
-            opacity: 0;
-            transition: opacity 0.2s ease;
+            height: 4px;
+            background: linear-gradient(135deg, #0078ff 0%, #005fd4 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
         }
 
-        .project-item:hover .project-overlay {
-            opacity: 1;
+        .project-card:hover::before {
+            transform: scaleX(1);
         }
 
-        .overlay-stat {
-            color: #fff;
+        .project-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .project-image-container {
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+        }
+
+        .project-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .project-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .project-time {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 2;
         }
 
+        .project-info {
+            padding: 20px;
+            position: relative;
+        }
+
+        .project-category {
+            display: inline-block;
+            background: linear-gradient(135deg, #0078ff 0%, #005fd4 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 120, 255, 0.3);
+        }
+
+        .project-title {
+            margin: 0 0 12px 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .project-description {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 20px 0;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .project-technologies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tech-tag {
+            background: rgba(0, 120, 255, 0.1);
+            color: #0078ff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(0, 120, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .tech-tag:hover {
+            background: rgba(0, 120, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .view-btn {
+            background: linear-gradient(135deg, #0078ff 0%, #005fd4 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 120, 255, 0.3);
+        }
+
+        .view-btn:hover {
+            background: linear-gradient(135deg, #005fd4 0%, #0047b3 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 120, 255, 0.4);
+        }
+
+        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #8e8e8e;
             grid-column: 1 / -1;
         }
 
         .empty-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.7;
         }
 
         .empty-title {
-            font-size: 28px;
-            font-weight: 300;
-            margin-bottom: 8px;
-            color: #262626;
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
         }
 
         .empty-text {
-            font-size: 14px;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .profile-btn.primary {
+            background: linear-gradient(135deg, #0078ff 0%, #005fd4 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 120, 255, 0.3);
+        }
+
+        .profile-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 120, 255, 0.4);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #8e8e8e;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #262626;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #262626;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #0095f6;
+            box-shadow: 0 0 0 3px rgba(0, 149, 246, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .upload-area {
+            border: 2px dashed #dbdbdb;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: #0095f6;
+            background: rgba(0, 149, 246, 0.02);
+        }
+
+        .upload-area.has-file {
+            border-color: #0095f6;
+            background: rgba(0, 149, 246, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            opacity: 0.7;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            color: #8e8e8e;
+        }
+
+        .file-name {
+            font-size: 12px;
+            color: #0095f6;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .btn-secondary {
+            padding: 10px 20px;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            background: white;
+            color: #262626;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #0095f6;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #007acc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 149, 246, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .projects-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -224,6 +646,18 @@
                 width: 120px;
                 height: 120px;
             }
+
+            .project-info {
+                padding: 20px;
+            }
+
+            .project-title {
+                font-size: 18px;
+            }
+
+            .project-description {
+                font-size: 13px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -239,16 +673,70 @@
             .profile-stats {
                 gap: 20px;
             }
+
+            .profile-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .profile-btn {
+                text-align: center;
+            }
+
+            .project-image-container {
+                height: 200px;
+            }
+
+            .project-info {
+                padding: 15px;
+            }
+
+            .empty-state {
+                padding: 40px 15px;
+            }
+
+            .empty-icon {
+                font-size: 48px;
+            }
+
+            .empty-title {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-{% include 'components/navbar.html' %}
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="main-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/main_page">
+            <span class="brand-gradient">Projectory</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <div class="navbar-nav ms-auto d-flex align-items-center flex-row gap-3">
+                <a class="nav-link nav-link-modern" href="{{ url_for('index') }}">
+                    <i class="nav-icon"></i>
+                    Каталог проєктів
+                </a>
+                <a class="nav-link nav-link-modern" href="{{ url_for('get_users_data') }}">
+                    <i class="nav-icon"></i>
+                    Мій акаунт
+                </a>
+                <div class="nav-item">
+                    {% include "components/login_comp.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
 
 <main class="profile-main">
-
     <section class="profile-header">
         <div>
             <img src="{{ user.user_avatar or url_for('static', path='images/Default.png') }}"
@@ -260,7 +748,6 @@
                 <h1 class="profile-username">{{ user.name }}</h1>
                 <div class="profile-actions">
                     <a href="{{ url_for('settings_page') }}" class="profile-btn">Редагувати профіль</a>
-                    <button class="profile-btn primary" onclick="openProjectModal()">Новий проєкт</button>
                 </div>
             </div>
 
@@ -282,6 +769,11 @@
         </div>
     </section>
 
+    <div class="create-project-section">
+        <button class="create-project-btn" onclick="openProjectModal()">
+            ➕ Створити новий проєкт
+        </button>
+    </div>
 
     <nav class="profile-tabs">
         <a href="#" class="profile-tab active">
@@ -289,86 +781,260 @@
         </a>
     </nav>
 
-
     <section class="projects-grid">
-        {% if user.projects and user.projects.length > 0 %}
+        {% if user.projects and user.projects|length > 0 %}
             {% for project in user.projects %}
-            <div class="project-item">
-                <img src="{{ project.image }}" alt="{{ project.title }}" class="project-image">
-                <div class="project-overlay">
-                    <div class="overlay-stat">❤️ {{ project.likes or 0 }}</div>
-                    <div class="overlay-stat">💬 {{ project.comments or 0 }}</div>
+                <div class="project-card"
+                     data-category="{{ project.category|lower if project.category else 'без категорії' }}">
+                    <div class="project-image-container">
+                        {% if project.images and project.images|length > 0 and project.images[0] %}
+                            <img src="{{ project.images[0] }}"
+                                 alt="{{ project.project_name if project.project_name else 'Проєкт без назви' }}">
+                        {% else %}
+                            <img src="{{ url_for('static', path='images/Default.png') }}"
+                                 alt="{{ project.project_name if project.project_name else 'Проєкт без назви' }}">
+                        {% endif %}
+                        <div class="project-time">
+                            {% if project.created_at %}
+                                {{ project.created_at|naturaltime if project.created_at is string else project.created_at.strftime('%d.%m.%Y') }}
+                            {% else %}
+                                Дата не вказана
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <div class="project-category">
+                            {{ project.category if project.category else 'Без категорії' }}
+                        </div>
+                        <h4 class="project-title">
+                            {{ project.project_name if project.project_name else 'Проєкт без назви' }}
+                        </h4>
+                        <p class="project-description">
+                            {% if project.description %}
+                                {% if project.description|length > 100 %}
+                                    {{ project.description[:100] }}...
+                                {% else %}
+                                    {{ project.description }}
+                                {% endif %}
+                            {% else %}
+                                <span class="no-description">Користувач ще не додав опис до цього проєкту</span>
+                            {% endif %}
+                        </p>
+
+                        <div class="project-technologies">
+                            {% if project.technologies %}
+                                {% set tech_list = project.technologies.split(',') %}
+                                {% for tech in tech_list[:3] %}
+                                    <span class="tech-tag">{{ tech.strip() }}</span>
+                                {% endfor %}
+                                {% if tech_list|length > 3 %}
+                                    <span class="tech-tag">+{{ tech_list|length - 3 }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="tech-tag no-tech">Технології не додані</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if project.id %}
+                        <a href="{{ url_for('restaurant_detail', project_id=project.id) }}" class="view-btn">Дізнатися
+                            більше</a>
+                    {% else %}
+                        <button class="view-btn" disabled>Дізнатися більше</button>
+                    {% endif %}
                 </div>
-            </div>
             {% endfor %}
         {% else %}
             <div class="empty-state">
                 <div class="empty-icon">📁</div>
                 <h2 class="empty-title">Поки що немає проєктів</h2>
                 <p class="empty-text">Створіть свій перший проєкт, щоб показати його тут</p>
-                <button class="profile-btn primary" onclick="openProjectModal()">Створити проєкт</button>
+
             </div>
         {% endif %}
     </section>
-</main>
 
-
-<div class="modal-overlay" id="modalOverlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px;">
-    <div style="background: white; border-radius: 12px; padding: 30px; max-width: 500px; width: 90%;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="font-size: 18px; font-weight: 600;">Новий проєкт</h3>
-            <button onclick="closeProjectModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
-        </div>
-
-        <form>
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px; font-size: 14px; font-weight: 500;">Назва проєкту</label>
-                <input type="text" style="width: 100%; padding: 8px 12px; border: 1px solid #dbdbdb; border-radius: 6px; font-size: 14px;">
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Новий проєкт</h3>
+                <button class="modal-close" onclick="closeProjectModal()">&times;</button>
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px; font-size: 14px; font-weight: 500;">Опис</label>
-                <textarea style="width: 100%; padding: 8px 12px; border: 1px solid #dbdbdb; border-radius: 6px; font-size: 14px; min-height: 80px; resize: vertical;"></textarea>
-            </div>
-
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 5px; font-size: 14px; font-weight: 500;">Зображення</label>
-                <div style="border: 2px dashed #dbdbdb; border-radius: 6px; padding: 30px; text-align: center; cursor: pointer;">
-                    <div style="font-size: 24px; margin-bottom: 8px;">📷</div>
-                    <div style="font-size: 14px; color: #8e8e8e;">Натисніть для завантаження зображення</div>
+            <form id="createProjectForm">
+                <div class="form-group">
+                    <label class="form-label">Назва проєкту *</label>
+                    <input type="text" name="name" class="form-input" placeholder="Введіть назву проєкту" required
+                           maxlength="50">
                 </div>
-            </div>
 
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button type="button" onclick="closeProjectModal()" style="padding: 8px 16px; border: 1px solid #dbdbdb; border-radius: 4px; background: white; cursor: pointer;">Скасувати</button>
-                <button type="submit" style="padding: 8px 16px; border: none; border-radius: 4px; background: #0095f6; color: white; cursor: pointer;">Опублікувати</button>
-            </div>
-        </form>
+                <div class="form-group">
+                    <label class="form-label">Категорія *</label>
+                    <select name="category" class="form-select" required>
+                        <option value="">Оберіть категорію</option>
+                        <option value="3d-model">3D Моделі</option>
+                        <option value="programming">Програмування</option>
+                        <option value="design">Дизайн</option>
+                        <option value="architecture">Архітектура</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Короткий опис *</label>
+                    <textarea name="description" class="form-textarea" placeholder="Короткий опис проєкту..."
+                              required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Технології *</label>
+                    <input type="text" name="technologies" class="form-input"
+                           placeholder="Наприклад: Python, React, Blender..." required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Детальний опис</label>
+                    <textarea name="detailed_description" class="form-textarea"
+                              placeholder="Детальний опис вашого проєкту..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Додаткова інформація</label>
+                    <textarea name="Additional_information" class="form-textarea"
+                              placeholder="Залишіть посилання сайт,де ви зберігаєте роботу..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Головне зображення *</label>
+                    <div class="upload-area" id="mainImageUpload">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">Натисніть для завантаження головного зображення</div>
+                        <div class="file-name" id="mainImageName"></div>
+                        <input type="file" name="main_image" class="file-input" accept="image/*" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Додаткові зображення</label>
+                    <div class="upload-area" id="additionalImagesUpload">
+                        <div class="upload-icon">🖼️</div>
+                        <div class="upload-text">Натисніть для завантаження додаткових зображень</div>
+                        <div class="file-name" id="additionalImagesName"></div>
+                        <input type="file" name="images" class="file-input" accept="image/*" multiple>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeProjectModal()">Скасувати</button>
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <div class="loading-spinner" id="loadingSpinner"></div>
+                        <span id="submitText">Опублікувати</span>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<script>
-    function openProjectModal() {
-        document.getElementById('modalOverlay').style.display = 'flex';
-    }
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    function closeProjectModal() {
-        document.getElementById('modalOverlay').style.display = 'none';
-    }
+    <script>
+        window.addEventListener('scroll', function () {
+            const navbar = document.getElementById('main-navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
 
-    document.getElementById('modalOverlay').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeProjectModal();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link-modern');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+
+
+            setupFileInput('mainImageUpload', 'mainImageName');
+            setupFileInput('additionalImagesUpload', 'additionalImagesName', true);
+        });
+
+
+        function setupFileInput(uploadAreaId, fileNameId, isMultiple = false) {
+            const uploadArea = document.getElementById(uploadAreaId);
+            const fileInput = uploadArea.querySelector('input[type="file"]');
+            const fileName = document.getElementById(fileNameId);
+
+            fileInput.addEventListener('change', function (e) {
+                if (this.files.length > 0) {
+                    uploadArea.classList.add('has-file');
+                    if (isMultiple) {
+                        fileName.textContent = `Обрано файлів: ${this.files.length}`;
+                    } else {
+                        fileName.textContent = this.files[0].name;
+                    }
+                } else {
+                    uploadArea.classList.remove('has-file');
+                    fileName.textContent = '';
+                }
+            });
         }
-    });
 
 
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeProjectModal();
+        function openProjectModal() {
+            document.getElementById('modalOverlay').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         }
-    });
-</script>
+
+        function closeProjectModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            document.getElementById('createProjectForm').reset();
+            document.getElementById('mainImageUpload').classList.remove('has-file');
+            document.getElementById('additionalImagesUpload').classList.remove('has-file');
+            document.getElementById('mainImageName').textContent = '';
+            document.getElementById('additionalImagesName').textContent = '';
+        }
+
+
+        document.getElementById('modalOverlay').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeProjectModal();
+            }
+        });
+
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeProjectModal();
+            }
+        });
+
+        document.getElementById('createProjectForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Відправка...';
+
+            const formData = new FormData(this);
+            fetch('/create_project', {
+                method: 'POST',
+                body: formData
+            }).finally(() => {
+                setTimeout(() => {
+                    closeProjectModal();
+                    window.location.reload();
+                }, 1000);
+            });
+        });
+    </script>
 
 </body>
 </html>

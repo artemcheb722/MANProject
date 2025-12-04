@@ -1,4 +1,4 @@
-site_name: restaurant reviews
+site_name: Projectory
 nav:
   - About: index.md
   - Tasks: tasks.md
@@ -34,7 +34,7 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/artemcheb722/Graduation-project-group3-#
+      link: https://github.com/artemcheb722/MANProject
 markdown_extensions:
   - pymdownx.superfences:
       custom_fences:
@@ -51,4 +51,4 @@ markdown_extensions:
       guess_lang: true
 
 copyright: |
-  &copy; 2025 <a href="https://github.com/artemcheb722/Graduation-project-group3-#"  target="_blank" rel="noopener">Source code</a>
+  &copy; 2025 <a href="https://github.com/artemcheb722/MANProject"  target="_blank" rel="noopener">Source code</a>

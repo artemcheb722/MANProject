@@ -1,6 +1,7 @@
-from pydantic import BaseModel, EmailStr, Field, ValidationInfo, model_validator
+from pydantic import BaseModel, EmailStr, Field, ValidationInfo, model_validator, ConfigDict
 from typing import Optional
-
+from typing import List
+from datetime import datetime
 
 class NewComment(BaseModel):
     restaurant_id: int
@@ -34,14 +35,29 @@ class RegisterUserFields(BaseFields, PasswordField):
 class BaseUserInfo(BaseFields):
     id: int
 
+
+class ProjectSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    project_name: str
+    category: str
+    description: str
+    detailed_description: str
+    images: List[str]
+    technologies: str
+    created_at: datetime
+
+
 class UserSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     name: str
     email: str
     followers: int
     profile_description: Optional[str] = None
     subscriptions: int
-    user_avatar: str
+    user_avatar: Optional[str] = None
+    projects: List[ProjectSchema]
 
 class UserUpdateProfile(BaseModel):
     name: Optional[str] = None

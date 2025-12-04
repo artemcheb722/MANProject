@@ -1,4 +1,5 @@
-'{% extends "components/base.html" %}
+
+{% extends "components/base.html" %}
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
@@ -32,6 +33,9 @@
 
       <button type="submit" class="btn btn-primary w-100">Submit</button>
     </form>
+    </br>
+      <h6>Якщо вже є аккаунт, <a href="{{ url_for('login') }}">увійдіть</a>.</h6>
+  </div>
   </div>
 </div>
 {% endblock %}

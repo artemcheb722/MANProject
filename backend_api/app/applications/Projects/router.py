@@ -6,8 +6,9 @@ from applications.Projects.models_restaurants import Project
 from database.session_dependencies import get_async_session
 import uuid
 from sqlalchemy import Text, and_, delete
-from applications.Projects.crud import create_project_in_db, get_project_data, get_project_by_pk, create_comment, \
-    get_project_by_pk, get_project_data
+from sqlalchemy.orm import joinedload
+from applications.Projects.crud import create_project_in_db, get_project_data, create_comment, \
+    get_project_data, get_project_by_pk
 from applications.Projects.schemas import ProjectSchema, SearchParamsSchema, CommentResponse, CommentCreate
 from applications.users.models import User
 from sqlalchemy import select
@@ -28,6 +29,8 @@ async def create_project(
         description: str = Form(...),
         technologies: str = Form(...),
         detailed_description: str = Form(...),
+        user=Depends(get_current_user),
+        Additional_information: str = Form(...),
         session: AsyncSession = Depends(get_async_session)
 ) -> ProjectSchema:
     project_uuid = uuid.uuid4()
@@ -38,7 +41,8 @@ async def create_project(
         url = await s3_storage.upload_product_image(image, restaurant_uuid=project_uuid)
         images_urls.append(url)
 
-    created_project = await  create_project_in_db(project_uuid=project_uuid, project_name=name, category=category,
+    created_project = await  create_project_in_db(user_id=user.id, project_uuid=project_uuid, project_name=name,
+                                                  category=category,Additional_information=Additional_information,
                                                   description=description, technologies=technologies,
                                                   detailed_description=detailed_description,
                                                   main_image=main_image, images=images_urls,
@@ -59,14 +63,43 @@ async def get_projects_by_category(category: str, session: AsyncSession = Depend
     }
 
 
+## Get projects by primary key to upload in catalog
 @router_projects.get('/{pk}')
-async def get_project(pk: int, session: AsyncSession = Depends(get_async_session), ) -> ProjectSchema:
-    product = await get_project_by_pk(pk, session)
-    if not product:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with pk #{pk} not found")
-    return product
+async def get_project(
+        pk: int,
+        session: AsyncSession = Depends(get_async_session)
+):
+    project = await get_project_by_pk(pk, session)
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    return {
+        "user_id": project.user_id,
+        "id": project.id,
+        "project_name": project.project_name,
+        "category": project.category,
+        "description": project.description,
+        "technologies": project.technologies,
+        "detailed_description": project.detailed_description,
+        "main_image": project.main_image,
+        "created_at": project.created_at,
+        "images": project.images,
+        "count_of_likes": project.count_of_likes,
+        "Additional_information": project.Additional_information,
+        "author": {
+            "id": project.user.id,
+            "name": project.user.name,
+            "email": project.user.email,
+            "followers": project.user.followers,
+            "profile_description": project.user.profile_description,
+            "subscriptions": project.user.subscriptions,
+            "user_avatar": project.user.user_avatar
+        }
+    }
 
 
+## Get projects by search
 @router_projects.get('/')
 async def get_projects(params: Annotated[SearchParamsSchema, Depends()],
                        session: AsyncSession = Depends(get_async_session)):
@@ -123,6 +156,55 @@ async def get_comments_for_project(
         }
         for comment, name in feedbacks_with_users
     ]
+
+
+@router_projects.post("/like/{project_id}")
+async def like_project(project_id: int, session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(select(Project).filter(Project.id == project_id))
+    project = result.scalar_one_or_none()
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    if project.count_of_likes is None:
+        project.count_of_likes = 1
+    else:
+        project.count_of_likes += 1
+
+    await session.commit()
+    await session.refresh(project)
+    return project
+
+
+@router_projects.post("/unlike/{project_id}")
+async def unlike_project(project_id: int, session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(select(Project).filter(Project.id == project_id))
+    project = result.scalar_one_or_none()
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    if project.count_of_likes is None:
+        project.count_of_likes = 1
+    else:
+        project.count_of_likes -= 1
+
+    await session.commit()
+    await session.refresh(project)
+    return project
+
+
+@router_projects.get("/likes/{project_id}")
+async def get_all_likes_for_project(project_id: int, session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(select(Project).filter(Project.id == project_id))
+    project = result.scalar_one_or_none()
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+
+    likes = project.count_of_likes
+    return likes
 
 # @router_restaurants.post("/favourite/{restaurant_id}")
 # async def add_to_favourite(
