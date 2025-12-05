@@ -466,7 +466,8 @@
     </style>
 </head>
 <body>
-
+{% extends "components/base.html" %}
+{% block content %}
 <div class="catalog-page">
     <aside class="sidebar">
         <h3>Категорії:</h3>
@@ -503,7 +504,7 @@
         </div>
     </main>
 </div>
-
+{% endblock %}
 <script>
     function filterProjects(category) {
         const cards = document.querySelectorAll(".project-card");

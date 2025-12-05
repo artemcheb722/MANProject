@@ -249,17 +249,6 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
             <span class="navbar-toggler-icon"></span>
         </button>
-
-        <div class="collapse navbar-collapse" id="navbarContent">
-            <div class="navbar-nav ms-auto d-flex align-items-center flex-row gap-3">
-                <a class="nav-link nav-link-modern" href="{{ url_for('index') }}">
-                    <i class="nav-icon"></i>
-                    Каталог проєктів
-                </a>
-                <a class="nav-link nav-link-modern" href="{{ url_for('get_users_data') }}">
-                    <i class="nav-icon"></i>
-                    Мій акаунт
-                </a>
                 <div class="nav-item">
                     {% include "components/login_comp.html" %}
                 </div>

@@ -223,7 +223,14 @@ async def register(
 
 @router.get("/main_page", response_class=HTMLResponse)
 async def get_main_page(request: Request):
-    return templates.TemplateResponse("main_page.html", {"request": request})
+    return templates.TemplateResponse(
+        "main_page.html",
+        {
+            "request": request,
+            "show_full_navbar": False,  # <<< ВАЖНО!
+            "show_search": False  # <<< Для главной тоже FALSE
+        }
+    )
 
 
 @router.get("/user_info", response_class=HTMLResponse)
@@ -317,7 +324,6 @@ async def settings_page(request: Request, user: dict = Depends(get_current_user_
     )
 
 
-
 @router.post("/settings_upgrade_profile")
 async def Edit_users_profile(
         request: Request,
@@ -326,7 +332,6 @@ async def Edit_users_profile(
         profile_description: str = Form(None),
         email: str = Form(None),
         user_avatar: UploadFile = File(None)):
-
     if user_avatar is not None and user_avatar.filename:
 
         Upgraded_profile = await edit_users_profile_with_avatar(
@@ -356,6 +361,7 @@ async def Edit_users_profile(
         }
     )
 
+
 @router.post("/create_project")
 async def create_project_endpoint(
         request: Request,
@@ -368,7 +374,6 @@ async def create_project_endpoint(
         images: list[UploadFile] = File(None),
         Additional_information: str = File(...),
 ):
-
     access_token = request.cookies.get("access_token")
     if not access_token:
         raise HTTPException(status_code=401, detail="Не авторизований користувач")
@@ -385,7 +390,6 @@ async def create_project_endpoint(
             Additional_information=Additional_information,
             images=images or []
         )
-
 
         user_data = await get_current_user_with_token(request)
 
@@ -407,6 +411,7 @@ async def create_project_endpoint(
                 "error_message": "Помилка при створенні проєкту"
             }
         )
+
 
 @router.post("/projects/like/{project_id}")
 async def like_projects(project_id: int, request: Request):
