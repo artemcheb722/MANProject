@@ -264,7 +264,7 @@ body {
                     <ul class="reviews-list">
                         {% for comment in comments %}
                             <li class="review-item">
-                                <div class="review-author">{{ comment.author }}</div>
+                                <a href="{{ url_for('get_user_profile_by_id', user_id=project.author.id) }}" class="review-author">{{ comment.author }}</a>
                                 <div class="review-text">{{ comment.text }}</div>
                                 <div class="review-time">{{ comment.created_at|naturaltime }}</div>
                             </li>
@@ -277,7 +277,7 @@ body {
 
             {% if request.cookies.access_token %}
                 <div class="add-review">
-                    <h3>✍️ Додати свій коментар</h3>
+                    <h3>Додати свій коментар</h3>
                     <form method="post" action="{{ url_for('add_comment', project_id=project.id) }}">
                         <div style="margin-bottom: 20px;">
                             <textarea name="comment_text" class="form-control" rows="4"
