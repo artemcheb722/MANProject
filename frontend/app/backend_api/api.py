@@ -245,20 +245,22 @@ async def get_user_by_pk(pk: int):
 async def like_project(project_id: int):
     async with httpx.AsyncClient() as client:
         response = await client.post(
-            url=f'{settings.BACKEND_API}/projects/like/{project_id}'
+            f'{settings.BACKEND_API}/projects/like/{project_id}'
         )
-        return response
+        return response.json()
+
 
 async def unlike_project(project_id: int):
     async with httpx.AsyncClient() as client:
         response = await client.post(
-            url=f'{settings.BACKEND_API}/projects/unlike/{project_id}'
+            f'{settings.BACKEND_API}/projects/unlike/{project_id}'
         )
-        return response
+        return response.json()
+
 
 async def get_all_likes_for_project(project_id: int):
     async with httpx.AsyncClient() as client:
         response = await client.get(
-            url=f'{settings.BACKEND_API}/projects/likes/{project_id}'
+            f'{settings.BACKEND_API}/projects/likes/{project_id}'
         )
-        return response
+        return response.json()

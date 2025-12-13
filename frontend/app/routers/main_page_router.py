@@ -12,6 +12,7 @@ from fastapi.responses import HTMLResponse
 from fastapi import HTTPException, UploadFile, File
 from backend_api.api import register_user, send_comment, get_all_comments, create_comment, add_to_favourite, \
     remove_from_favourite, check_if_favourite
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -415,37 +416,33 @@ async def create_project_endpoint(
 
 @router.post("/projects/like/{project_id}")
 async def like_projects(project_id: int, request: Request):
-    response = await like_project(project_id)
-    project = await get_project(project_id)
-    return templates.TemplateResponse(
-        "restaurant_detail.html",
-        {
-            "like": response,
-            "request": request,
-            "project": project
-        }
-    )
+    await like_project(project_id)
+    likes_count = await get_all_likes_for_project(project_id)
+
+    return JSONResponse({
+        "ok": True,
+        "likes_count": likes_count,
+        "is_liked": True
+    })
 
 
 @router.post("/projects/unlike/{project_id}")
 async def unlike_projects(project_id: int, request: Request):
-    response = await unlike_project(project_id)
-    return templates.TemplateResponse(
-        "restaurant_detail.html",
-        {
-            "unlike": response,
-            "request": request
-        }
-    )
+    await unlike_project(project_id)
+    likes_count = await get_all_likes_for_project(project_id)
+
+    return JSONResponse({
+        "ok": True,
+        "likes_count": likes_count,
+        "is_liked": False
+    })
 
 
-@router.post("/projects/likes/{project_id}")
-async def get_likes_for_project(project_id: int, request: Request):
-    response = await get_all_likes_for_project(project_id)
-    return templates.TemplateResponse(
-        "restaurant_detail.html",
-        {
-            "likes": response,
-            "request": request
-        }
-    )
+@router.get("/projects/likes/{project_id}")
+async def get_likes_for_project(project_id: int):
+    likes_count = await get_all_likes_for_project(project_id)
+
+    return JSONResponse({
+        "likes_count": likes_count,
+        "is_liked": False
+    })
