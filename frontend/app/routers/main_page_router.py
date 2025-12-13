@@ -12,6 +12,7 @@ from fastapi.responses import HTMLResponse
 from fastapi import HTTPException, UploadFile, File
 from backend_api.api import register_user, send_comment, get_all_comments, create_comment, add_to_favourite, \
     remove_from_favourite, check_if_favourite
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -223,7 +224,14 @@ async def register(
 
 @router.get("/main_page", response_class=HTMLResponse)
 async def get_main_page(request: Request):
-    return templates.TemplateResponse("main_page.html", {"request": request})
+    return templates.TemplateResponse(
+        "main_page.html",
+        {
+            "request": request,
+            "show_full_navbar": False,  # <<< ВАЖНО!
+            "show_search": False  # <<< Для главной тоже FALSE
+        }
+    )
 
 
 @router.get("/user_info", response_class=HTMLResponse)
@@ -317,7 +325,6 @@ async def settings_page(request: Request, user: dict = Depends(get_current_user_
     )
 
 
-
 @router.post("/settings_upgrade_profile")
 async def Edit_users_profile(
         request: Request,
@@ -326,7 +333,6 @@ async def Edit_users_profile(
         profile_description: str = Form(None),
         email: str = Form(None),
         user_avatar: UploadFile = File(None)):
-
     if user_avatar is not None and user_avatar.filename:
 
         Upgraded_profile = await edit_users_profile_with_avatar(
@@ -356,6 +362,7 @@ async def Edit_users_profile(
         }
     )
 
+
 @router.post("/create_project")
 async def create_project_endpoint(
         request: Request,
@@ -368,7 +375,6 @@ async def create_project_endpoint(
         images: list[UploadFile] = File(None),
         Additional_information: str = File(...),
 ):
-
     access_token = request.cookies.get("access_token")
     if not access_token:
         raise HTTPException(status_code=401, detail="Не авторизований користувач")
@@ -385,7 +391,6 @@ async def create_project_endpoint(
             Additional_information=Additional_information,
             images=images or []
         )
-
 
         user_data = await get_current_user_with_token(request)
 
@@ -408,39 +413,36 @@ async def create_project_endpoint(
             }
         )
 
+
 @router.post("/projects/like/{project_id}")
 async def like_projects(project_id: int, request: Request):
-    response = await like_project(project_id)
-    project = await get_project(project_id)
-    return templates.TemplateResponse(
-        "restaurant_detail.html",
-        {
-            "like": response,
-            "request": request,
-            "project": project
-        }
-    )
+    await like_project(project_id)
+    likes_count = await get_all_likes_for_project(project_id)
+
+    return JSONResponse({
+        "ok": True,
+        "likes_count": likes_count,
+        "is_liked": True
+    })
 
 
 @router.post("/projects/unlike/{project_id}")
 async def unlike_projects(project_id: int, request: Request):
-    response = await unlike_project(project_id)
-    return templates.TemplateResponse(
-        "restaurant_detail.html",
-        {
-            "unlike": response,
-            "request": request
-        }
-    )
+    await unlike_project(project_id)
+    likes_count = await get_all_likes_for_project(project_id)
+
+    return JSONResponse({
+        "ok": True,
+        "likes_count": likes_count,
+        "is_liked": False
+    })
 
 
-@router.post("/projects/likes/{project_id}")
-async def get_likes_for_project(project_id: int, request: Request):
-    response = await get_all_likes_for_project(project_id)
-    return templates.TemplateResponse(
-        "restaurant_detail.html",
-        {
-            "likes": response,
-            "request": request
-        }
-    )
+@router.get("/projects/likes/{project_id}")
+async def get_likes_for_project(project_id: int):
+    likes_count = await get_all_likes_for_project(project_id)
+
+    return JSONResponse({
+        "likes_count": likes_count,
+        "is_liked": False
+    })

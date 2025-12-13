@@ -76,6 +76,263 @@
             padding: 0 20px;
         }
 
+        /* Projects Grid - оставляем 4 в ряд как у вас */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            padding: 20px 0;
+        }
+
+        /* КАРТОЧКИ ПРОЕКТОВ - МОЙ ДИЗАЙН */
+        .project-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #eaeaea;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            animation: fadeInUp 0.5s ease-out forwards;
+            animation-fill-mode: both;
+            opacity: 0;
+        }
+
+        .project-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .project-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .project-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .project-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .project-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border-color: #3498db;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .project-card:hover::before {
+            opacity: 1;
+        }
+
+        .project-image-container {
+            height: 160px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .project-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s;
+        }
+
+        .project-card:hover .project-image-container img {
+            transform: scale(1.1);
+        }
+
+        .project-time {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #2c3e50;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-info {
+            padding: 20px;
+        }
+
+        .project-category {
+            display: inline-block;
+            background: #ecf0f1;
+            color: #3498db;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            border: 1px solid #d6dbdf;
+        }
+
+        .project-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+        }
+
+        .project-description {
+            color: #7f8c8d;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            min-height: 44px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .project-technologies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 15px 0 20px;
+        }
+
+        .tech-tag {
+            background: #f8f9fa;
+            color: #34495e;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid #eaeaea;
+            transition: all 0.2s;
+        }
+
+        .tech-tag:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .tech-tag.no-tech {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .view-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: #f8f9fa;
+            color: #3498db;
+            padding: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            border-top: 1px solid #eaeaea;
+            transition: all 0.3s;
+        }
+
+        .view-btn:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .view-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .view-btn:disabled:hover {
+            background: #f8f9fa;
+            color: #3498db;
+        }
+
+        /* Empty State - обновляем под новый дизайн */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 30px;
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 22px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .empty-text {
+            color: #95a5a6;
+            font-size: 15px;
+            max-width: 300px;
+            margin: 0 auto 20px;
+            line-height: 1.6;
+        }
+
+        /* Анимация для карточек */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Адаптивность для карточек */
+        @media (max-width: 1200px) {
+            .projects-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .project-image-container {
+                height: 140px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .project-image-container {
+                height: 160px;
+            }
+        }
+
         .profile-header {
             display: flex;
             gap: 60px;
