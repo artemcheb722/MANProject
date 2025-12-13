@@ -73,7 +73,7 @@ async def restaurant_detail(
     project = await  get_project(project_id)
     comments = await get_all_comments(project_id)
 
-    return templates.TemplateResponse("restaurant_detail.html", {
+    return templates.TemplateResponse("project_detail.html", {
         "request": request,
         "project": project,
         "comments": comments,
@@ -129,7 +129,7 @@ async def get_all_comments_for_project(
     project = await  get_project(project_id)
     comments = await get_all_comments(project_id)
 
-    return templates.TemplateResponse("restaurant_detail.html", {
+    return templates.TemplateResponse("project_detail.html", {
         "request": request,
         "project": project,
         "comments": comments,
@@ -228,8 +228,8 @@ async def get_main_page(request: Request):
         "main_page.html",
         {
             "request": request,
-            "show_full_navbar": False,  # <<< ВАЖНО!
-            "show_search": False  # <<< Для главной тоже FALSE
+            "show_full_navbar": False,
+            "show_search": False
         }
     )
 

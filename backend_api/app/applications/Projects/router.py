@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status, Body, UploadFile, HTTPException, Form, File
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.s3.s3 import s3_storage
-from applications.Projects.models_restaurants import Project
+from applications.Projects.models_projects import Project
 from database.session_dependencies import get_async_session
 import uuid
 from sqlalchemy import Text, and_, delete
@@ -12,7 +12,7 @@ from applications.Projects.crud import create_project_in_db, get_project_data, c
 from applications.Projects.schemas import ProjectSchema, SearchParamsSchema, CommentResponse, CommentCreate
 from applications.users.models import User
 from sqlalchemy import select
-from applications.Projects.models_restaurants import ProjectComments
+from applications.Projects.models_projects import ProjectComments
 from applications.auth.security import get_current_user
 
 router_projects = APIRouter()
@@ -206,52 +206,3 @@ async def get_all_likes_for_project(project_id: int, session: AsyncSession = Dep
     likes = project.count_of_likes
     return likes
 
-# @router_restaurants.post("/favourite/{restaurant_id}")
-# async def add_to_favourite(
-#     restaurant_id: int,
-#     user: User = Depends(get_current_user),
-#     session: AsyncSession = Depends(get_async_session)
-# ):
-#     fav = FavouriteRestaurants(user_id=user.id, restaurant_id=restaurant_id)
-#     session.add(fav)
-#     await session.commit()
-#     return {"detail": "Added to favourites"}
-#
-# @router_restaurants.delete("/favourit/{restaurant_id}")
-# async def remove_from_favourite(
-#     restaurant_id: int,
-#     user: User = Depends(get_current_user),
-#     session: AsyncSession = Depends(get_async_session)
-# ):
-#     stmt = delete(FavouriteRestaurants).where(
-#         and_(
-#             FavouriteRestaurants.user_id == user.id,
-#             FavouriteRestaurants.restaurant_id == restaurant_id
-#         )
-#     )
-#     await session.execute(stmt)
-#     await session.commit()
-#     return {"detail": "Removed from favourites"}
-#
-#
-#
-# @router_restaurants.get("/restaurants/favourite/check/{restaurant_id}")
-# async def check_if_favourite(
-#     restaurant_id: int,
-#     session: AsyncSession = Depends(get_async_session),
-#     current_user: User = Depends(get_current_user)
-# ):
-#     stmt = select(FavouriteRestaurants).where(
-#         FavouriteRestaurants.restaurant_id == restaurant_id,
-#         FavouriteRestaurants.user_id == current_user.id
-#     )
-#     result = await session.execute(stmt)
-#     favourite = result.scalar_one_or_none()
-#
-#     if favourite:
-#         return {"is_favourite": True}
-#
-#     raise HTTPException(
-#         status_code=status.HTTP_404_NOT_FOUND,
-#         detail="Ресторан не у списку улюблених"
-#     )

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from enum import StrEnum
 from datetime import datetime
-from applications.Projects.models_restaurants import Project
+from applications.Projects.models_projects import Project
 from pydantic import BaseModel, Field
 from typing import Annotated, Optional
 

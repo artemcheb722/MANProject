@@ -7,7 +7,7 @@ from sqlalchemy.orm import joinedload
 
 from applications.Projects.schemas import SearchParamsSchema, SortEnum, SortByEnum, CommentCreate
 
-from applications.Projects.models_restaurants import Project, ProjectComments
+from applications.Projects.models_projects import Project, ProjectComments
 from sqlalchemy.orm import selectinload
 
 
