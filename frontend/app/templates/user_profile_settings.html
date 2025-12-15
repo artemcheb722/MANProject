@@ -167,11 +167,6 @@
                       placeholder="Розкажіть трохи про себе">{{ user.profile_description or '' }}</textarea>
         </div>
 
-        <div class="form-group">
-            <label for="email">Електронна пошта *</label>
-            <input type="email" id="email" name="email"
-                   value="{{ user.email or '' }}" required>
-        </div>
 
         <div class="form-group">
             <label for="user_avatar">Аватар профілю</label>

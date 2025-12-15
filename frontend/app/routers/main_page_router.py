@@ -331,11 +331,12 @@ async def Edit_users_profile(
         user: dict = Depends(get_current_user_with_token),
         name: str = Form(None),
         profile_description: str = Form(None),
-        email: str = Form(None),
-        user_avatar: UploadFile = File(None)):
-    if user_avatar is not None and user_avatar.filename:
+        user_avatar: UploadFile = File(None)
+):
+    email = user.get("email")
 
-        Upgraded_profile = await edit_users_profile_with_avatar(
+    if user_avatar is not None and user_avatar.filename:
+        upgraded_profile = await edit_users_profile_with_avatar(
             access_token=user.get("access_token"),
             name=name,
             email=email,
@@ -344,8 +345,7 @@ async def Edit_users_profile(
             token=user.get("token")
         )
     else:
-
-        Upgraded_profile = await edit_users_profile(
+        upgraded_profile = await edit_users_profile(
             access_token=user.get("access_token"),
             name=name,
             email=email,
@@ -357,7 +357,7 @@ async def Edit_users_profile(
         "user_profile_settings.html",
         {
             "request": request,
-            "users_upgrade": Upgraded_profile,
+            "users_upgrade": upgraded_profile,
             "user": user
         }
     )

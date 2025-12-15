@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy import String, Text, ForeignKey
+from sqlalchemy import String, Text, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -29,6 +29,15 @@ class Project(ModelCommonMixin, Base):
     Additional_information: Mapped[str] = mapped_column(Text, nullable=True)
     user = relationship("User", back_populates="projects", lazy="selectin")
     count_of_likes: Mapped[int] = mapped_column(default=0, nullable=True)
+    show_detailed_description: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=True
+    )
+
+    show_additional_information: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=True
+    )
     comments_relation = relationship(
         "ProjectComments",
         back_populates="project",
@@ -62,5 +71,3 @@ class UserProject(ModelCommonMixin, Base):
     project_photo: Mapped[str] = mapped_column(nullable=True)
 
     # user = relationship("User", back_populates="projects")
-
-
