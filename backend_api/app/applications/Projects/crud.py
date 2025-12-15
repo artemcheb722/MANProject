@@ -11,7 +11,9 @@ from applications.Projects.models_projects import Project, ProjectComments
 from sqlalchemy.orm import selectinload
 
 
-async def create_project_in_db(user_id, project_uuid, project_name, category, Additional_information, description, technologies, detailed_description, main_image, images, session) -> Project:
+async def create_project_in_db(user_id, project_uuid, project_name, category, Additional_information,
+                               show_detailed_description, show_additional_information, description, technologies, detailed_description,
+                               main_image, images, session) -> Project:
     new_project = Project(
         uuid_data=project_uuid,
         user_id=user_id,
@@ -21,6 +23,8 @@ async def create_project_in_db(user_id, project_uuid, project_name, category, Ad
         technologies=technologies.strip(),
         detailed_description=detailed_description,
         Additional_information=Additional_information,
+        show_detailed_description=show_detailed_description,
+        show_additional_information=show_additional_information,
         main_image=main_image,
         images=images,
     )

@@ -19,6 +19,8 @@ class ProjectSchema(BaseModel):
     images: list[str]
     user_id: int
     Additional_information: str
+    show_detailed_description: bool
+    show_additional_information: bool
 
     class Config:
         from_attributes = True

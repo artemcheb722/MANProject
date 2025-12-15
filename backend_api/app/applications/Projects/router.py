@@ -28,12 +28,16 @@ async def create_project(
         category: str = Form(..., max_length=150),
         description: str = Form(...),
         technologies: str = Form(...),
-        detailed_description: str = Form(...),
+        detailed_description: str | None = Form(None),
         user=Depends(get_current_user),
-        Additional_information: str = Form(...),
+        Additional_information: str | None = Form(None),
+        show_detailed_description: bool = Form(False),
+        show_additional_information: bool = Form(False),
         session: AsyncSession = Depends(get_async_session)
 ) -> ProjectSchema:
     project_uuid = uuid.uuid4()
+    show_detailed_description_bool = show_detailed_description
+    show_additional_information_bool = show_additional_information
     main_image = await s3_storage.upload_product_image(main_image, restaurant_uuid=project_uuid)
     images = images or []
     images_urls = []
@@ -42,8 +46,10 @@ async def create_project(
         images_urls.append(url)
 
     created_project = await  create_project_in_db(user_id=user.id, project_uuid=project_uuid, project_name=name,
-                                                  category=category,Additional_information=Additional_information,
+                                                  category=category, Additional_information=Additional_information,
                                                   description=description, technologies=technologies,
+                                                  show_detailed_description=show_detailed_description_bool,
+                                                  show_additional_information=show_additional_information_bool,
                                                   detailed_description=detailed_description,
                                                   main_image=main_image, images=images_urls,
                                                   session=session)
@@ -202,7 +208,5 @@ async def get_all_likes_for_project(project_id: int, session: AsyncSession = Dep
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-
     likes = project.count_of_likes
     return likes
-
