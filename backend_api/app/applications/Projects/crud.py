@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import asc, desc, select, func, or_, and_
+from sqlalchemy import asc, desc, select, func, or_, and_, delete
 import math
 from sqlalchemy.orm import joinedload
 
@@ -11,7 +11,9 @@ from applications.Projects.models_projects import Project, ProjectComments
 from sqlalchemy.orm import selectinload
 
 
-async def create_project_in_db(user_id, project_uuid, project_name, category, Additional_information, description, technologies, detailed_description, main_image, images, session) -> Project:
+async def create_project_in_db(user_id, project_uuid, project_name, category, Additional_information,
+                               show_detailed_description, show_additional_information, description, technologies, detailed_description,
+                               main_image, images, session) -> Project:
     new_project = Project(
         uuid_data=project_uuid,
         user_id=user_id,
@@ -21,6 +23,8 @@ async def create_project_in_db(user_id, project_uuid, project_name, category, Ad
         technologies=technologies.strip(),
         detailed_description=detailed_description,
         Additional_information=Additional_information,
+        show_detailed_description=show_detailed_description,
+        show_additional_information=show_additional_information,
         main_image=main_image,
         images=images,
     )
@@ -78,3 +82,15 @@ async def create_comment(user_id: int, project_id: int, feedback: str, session: 
     session.add(created_comment)
     await session.commit()
     return created_comment
+
+
+async def delete_project(user_id: int, project_id: int, session: AsyncSession):
+    query = delete(Project).where(
+        and_(
+            Project.user_id == user_id,
+            Project.id == project_id
+        )
+    )
+    await session.execute(query)
+    await session.commit()
+    print(query)

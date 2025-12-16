@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse
 
 from backend_api.api import get_current_user_with_token, login_user, get_projects, get_project, get_user_info, \
     get_project_by_category, get_users_info_for_account, edit_users_profile, edit_users_profile_with_avatar, \
-    create_projects, get_user_by_pk, like_project, unlike_project, get_all_likes_for_project
+    create_projects, get_user_by_pk, like_project, unlike_project, get_all_likes_for_project, delete_projects_by_user
 
 import humanize
 from datetime import datetime
@@ -45,11 +45,6 @@ async def index(request: Request,
         context['user'] = user
 
     return templates.TemplateResponse('index.html', context=context)
-
-
-@router.post('/favourite_restaurants')
-async def favourite_restaurants():
-    return templates.TemplateResponse('favourite_restaurants.html')
 
 
 def naturaltime(value):
@@ -331,11 +326,12 @@ async def Edit_users_profile(
         user: dict = Depends(get_current_user_with_token),
         name: str = Form(None),
         profile_description: str = Form(None),
-        email: str = Form(None),
-        user_avatar: UploadFile = File(None)):
-    if user_avatar is not None and user_avatar.filename:
+        user_avatar: UploadFile = File(None)
+):
+    email = user.get("email")
 
-        Upgraded_profile = await edit_users_profile_with_avatar(
+    if user_avatar is not None and user_avatar.filename:
+        upgraded_profile = await edit_users_profile_with_avatar(
             access_token=user.get("access_token"),
             name=name,
             email=email,
@@ -344,8 +340,7 @@ async def Edit_users_profile(
             token=user.get("token")
         )
     else:
-
-        Upgraded_profile = await edit_users_profile(
+        upgraded_profile = await edit_users_profile(
             access_token=user.get("access_token"),
             name=name,
             email=email,
@@ -357,7 +352,7 @@ async def Edit_users_profile(
         "user_profile_settings.html",
         {
             "request": request,
-            "users_upgrade": Upgraded_profile,
+            "users_upgrade": upgraded_profile,
             "user": user
         }
     )
@@ -374,6 +369,8 @@ async def create_project_endpoint(
         main_image: UploadFile = File(...),
         images: list[UploadFile] = File(None),
         Additional_information: str = File(...),
+        show_detailed_description: bool = Form(False),
+        show_additional_information: bool = Form(False)
 ):
     access_token = request.cookies.get("access_token")
     if not access_token:
@@ -389,7 +386,9 @@ async def create_project_endpoint(
             detailed_description=detailed_description,
             main_image=main_image,
             Additional_information=Additional_information,
-            images=images or []
+            images=images or [],
+            show_detailed_description=show_detailed_description,
+            show_additional_information=show_additional_information
         )
 
         user_data = await get_current_user_with_token(request)
@@ -446,3 +445,34 @@ async def get_likes_for_project(project_id: int):
         "likes_count": likes_count,
         "is_liked": False
     })
+
+
+@router.get("/projects/{project_id}")
+async def project_detail_for_user_account(
+        request: Request,
+        project_id: int,
+
+):
+    project = await  get_project(project_id)
+    comments = await get_all_comments(project_id)
+
+    return templates.TemplateResponse("project_details_for_users_account.html", {
+        "request": request,
+        "project": project,
+        "comments": comments,
+    })
+
+
+@router.delete("/projects/delete/{project_id}")
+async def delete_project(
+        project_id: int,
+        request: Request,
+        user_data: dict = Depends(get_current_user_with_token),
+):
+    access_token = user_data.get("access_token") or user_data.get("token")
+
+    if not access_token:
+        return {"success": False, "error": "Token not found"}
+
+    result = await delete_projects_by_user(project_id, access_token)
+    return result

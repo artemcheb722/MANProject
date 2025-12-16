@@ -13,12 +13,14 @@ class ProjectSchema(BaseModel):
     category: str
     description: str
     technologies: str
-    detailed_description: str
+    detailed_description: Optional[str] = None
     main_image: str
     created_at: datetime
     images: list[str]
     user_id: int
-    Additional_information: str
+    Additional_information: Optional[str] = None
+    show_detailed_description: bool
+    show_additional_information: bool
 
     class Config:
         from_attributes = True

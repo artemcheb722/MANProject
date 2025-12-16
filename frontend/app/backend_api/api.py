@@ -1,8 +1,6 @@
-
-
 import httpx
 from settings import settings
-from fastapi import Request, UploadFile
+from fastapi import Request, UploadFile, HTTPException
 
 
 async def login_user(user_email: str, password: str):
@@ -56,12 +54,14 @@ async def get_projects(q: str = ""):
         )
         return response.json()
 
+
 async def get_project(pk: int):
     async with httpx.AsyncClient() as client:
         response = await client.get(
             url=f'{settings.BACKEND_API}/projects/{pk}',
         )
         return response.json()
+
 
 async def get_project_by_category(category: str = ""):
     async with httpx.AsyncClient() as client:
@@ -86,6 +86,7 @@ async def send_comment(access_token: str, restaurant_id: int, text: str, author_
         )
         return response.json()
 
+
 ## current func to create comment
 async def create_comment(project_id: int, feedback: str, token: str):
     async with httpx.AsyncClient() as client:
@@ -101,7 +102,6 @@ async def create_comment(project_id: int, feedback: str, token: str):
             }
         )
         return response.json()
-
 
 
 async def get_all_comments(project_id: int):
@@ -123,6 +123,7 @@ async def add_to_favourite(restaurant_id: int, token: str):
         )
         return response.json()
 
+
 async def remove_from_favourite(restaurant_id: int, token: str):
     async with httpx.AsyncClient() as client:
         response = await client.delete(
@@ -133,6 +134,7 @@ async def remove_from_favourite(restaurant_id: int, token: str):
             }
         )
         return response.json()
+
 
 async def check_if_favourite(restaurant_id: int, token: str) -> bool:
     async with httpx.AsyncClient() as client:
@@ -153,6 +155,7 @@ async def get_users_info_for_account(access_token: str):
         user_info = response.json()
         return user_info
 
+
 ## TO ADD WITHOUT AVA
 async def edit_users_profile(access_token: str, profile_description: str, name: str, email: str,
                              token: str):
@@ -172,11 +175,11 @@ async def edit_users_profile(access_token: str, profile_description: str, name: 
         )
         return response.json()
 
+
 ## TO ADD WITH AVA
 async def edit_users_profile_with_avatar(access_token: str, profile_description: str, name: str, email: str,
                                          user_avatar: UploadFile, token: str):
     async with httpx.AsyncClient() as client:
-
         data = {
             'name': name or "",
             'profile_description': profile_description or "",
@@ -202,15 +205,20 @@ async def edit_users_profile_with_avatar(access_token: str, profile_description:
 
 async def create_projects(access_token: str, main_image: UploadFile, images: list[UploadFile],
                           name: str, category: str, description: str,
-                          technologies: str, detailed_description: str, Additional_information: str):
+                          technologies: str, detailed_description: str, Additional_information: str,
+                          show_detailed_description: bool,
+                          show_additional_information: bool):
     async with httpx.AsyncClient() as client:
         data = {
             'name': name,
             'category': category,
             'description': description,
             'technologies': technologies,
-            'detailed_description': detailed_description,
-            'Additional_information': Additional_information
+            'detailed_description': detailed_description or "",
+            'Additional_information': Additional_information or "",
+            'show_additional_information': show_additional_information,
+            'show_detailed_description': show_detailed_description
+
         }
 
         files = []
@@ -235,12 +243,14 @@ async def create_projects(access_token: str, main_image: UploadFile, images: lis
         )
         return response.json()
 
+
 async def get_user_by_pk(pk: int):
     async with httpx.AsyncClient() as client:
         response = await client.get(
             url=f'{settings.BACKEND_API}/users/{pk}',
         )
         return response.json()
+
 
 async def like_project(project_id: int):
     async with httpx.AsyncClient() as client:
@@ -264,3 +274,18 @@ async def get_all_likes_for_project(project_id: int):
             f'{settings.BACKEND_API}/projects/likes/{project_id}'
         )
         return response.json()
+
+
+async def delete_projects_by_user(project_id: int, access_token: str):
+    async with httpx.AsyncClient() as client:
+        response = await client.delete(
+            f"{settings.BACKEND_API}/projects/delete/{project_id}",
+            headers={
+                'Authorization': f'Bearer {access_token}',
+                'Content-Type': 'application/json'
+            }
+        )
+        if response.status_code == 200:
+            return {"success": True, "message": "Проект удален"}
+        else:
+            return {"success": False, "error": response.json()}
