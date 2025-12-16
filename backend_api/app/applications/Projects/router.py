@@ -93,6 +93,8 @@ async def get_project(
         "images": project.images,
         "count_of_likes": project.count_of_likes,
         "Additional_information": project.Additional_information,
+        "show_detailed_description": project.show_detailed_description,
+        "show_additional_information": project.show_additional_information,
         "author": {
             "id": project.user.id,
             "name": project.user.name,
@@ -210,3 +212,7 @@ async def get_all_likes_for_project(project_id: int, session: AsyncSession = Dep
 
     likes = project.count_of_likes
     return likes
+
+
+# @router_projects.delete("/project/delete")
+# async def delete

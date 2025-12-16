@@ -1094,7 +1094,7 @@
                     </div>
 
                     {% if project.id %}
-                        <a href="{{ url_for('restaurant_detail', project_id=project.id) }}" class="view-btn">Дізнатися
+                        <a href="{{ url_for('project_detail_for_user_account', project_id=project.id) }}" class="view-btn">Дізнатися
                             більше</a>
                     {% else %}
                         <button class="view-btn" disabled>Дізнатися більше</button>
@@ -1178,6 +1178,23 @@
                         <div class="file-name" id="additionalImagesName"></div>
                         <input type="file" name="images" class="file-input" accept="image/*" multiple>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Показувати додаткову інформацію?</label>
+                    <select name="show_additional_information" class="form-select" required>
+                        <option value="">Оберіть</option>
+                        <option value="True">Так</option>
+                        <option value="False">Ні</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Показувати детальний опис?</label>
+                    <select name="show_detailed_description" class="form-select" required>
+                        <option value="">Оберіть</option>
+                        <option value="True">Так</option>
+                        <option value="False">Ні</option>
+                    </select>
                 </div>
 
                 <div class="modal-actions">

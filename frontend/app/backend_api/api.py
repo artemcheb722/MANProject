@@ -202,15 +202,19 @@ async def edit_users_profile_with_avatar(access_token: str, profile_description:
 
 async def create_projects(access_token: str, main_image: UploadFile, images: list[UploadFile],
                           name: str, category: str, description: str,
-                          technologies: str, detailed_description: str, Additional_information: str):
+                          technologies: str, detailed_description: str, Additional_information: str, show_detailed_description: bool,
+                          show_additional_information: bool):
     async with httpx.AsyncClient() as client:
         data = {
             'name': name,
             'category': category,
             'description': description,
             'technologies': technologies,
-            'detailed_description': detailed_description,
-            'Additional_information': Additional_information
+            'detailed_description': detailed_description or "",
+            'Additional_information': Additional_information or "",
+            'show_additional_information': show_additional_information,
+            'show_detailed_description': show_detailed_description
+
         }
 
         files = []

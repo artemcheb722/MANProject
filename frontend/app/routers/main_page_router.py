@@ -47,9 +47,7 @@ async def index(request: Request,
     return templates.TemplateResponse('index.html', context=context)
 
 
-@router.post('/favourite_restaurants')
-async def favourite_restaurants():
-    return templates.TemplateResponse('favourite_restaurants.html')
+
 
 
 def naturaltime(value):
@@ -374,6 +372,8 @@ async def create_project_endpoint(
         main_image: UploadFile = File(...),
         images: list[UploadFile] = File(None),
         Additional_information: str = File(...),
+        show_detailed_description: bool = Form(False),
+        show_additional_information: bool = Form(False)
 ):
     access_token = request.cookies.get("access_token")
     if not access_token:
@@ -389,7 +389,9 @@ async def create_project_endpoint(
             detailed_description=detailed_description,
             main_image=main_image,
             Additional_information=Additional_information,
-            images=images or []
+            images=images or [],
+            show_detailed_description=show_detailed_description,
+            show_additional_information=show_additional_information
         )
 
         user_data = await get_current_user_with_token(request)
@@ -445,4 +447,20 @@ async def get_likes_for_project(project_id: int):
     return JSONResponse({
         "likes_count": likes_count,
         "is_liked": False
+    })
+
+
+@router.get("/projects/{project_id}")
+async def project_detail_for_user_account(
+        request: Request,
+        project_id: int,
+
+):
+    project = await  get_project(project_id)
+    comments = await get_all_comments(project_id)
+
+    return templates.TemplateResponse("project_details_for_users_account.html", {
+        "request": request,
+        "project": project,
+        "comments": comments,
     })

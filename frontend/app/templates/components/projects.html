@@ -239,15 +239,14 @@
         .project-card img {
             width: 100%;
             height: 220px;
-            object-fit: cover;
-            transition: transform 0.4s ease;
+            object-fit: contain;
+            background: #f5f7fa;
         }
 
         .project-card:hover img {
-            transform: scale(1.1);
+            transform: none;
         }
 
-        /* Красивое время в карточке */
         .project-time {
             position: absolute;
             top: 15px;
@@ -278,17 +277,12 @@
         }
 
         .project-category {
-            display: inline-block;
-            background: var(--gradient);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
+            background: none;
+            color: var(--primary-color);
+            padding: 0;
+            font-size: 15px;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0, 120, 255, 0.3);
+            margin-bottom: 8px;
         }
 
         .project-info h4 {
@@ -463,47 +457,62 @@
                 transform: translateY(0);
             }
         }
+
+        .project-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .view-btn {
+            margin-top: auto;
+        }
+
     </style>
 </head>
 <body>
 {% extends "components/base.html" %}
 {% block content %}
-<div class="catalog-page">
-    <aside class="sidebar">
-        <h3>Категорії:</h3>
-        <form method="post" action="/">
-            <button type="submit" name="category" value="">Усі</button>
-            <button type="submit" name="category" value="3d-model">3D</button>
-            <button type="submit" name="category" value="programming">Програми</button>
-            <button type="submit" name="category" value="design">Дизайн</button>
-            <button type="submit" name="category" value="architecture">Архітектура</button>
-        </form>
-    </aside>
+    <div class="catalog-page">
+        <aside class="sidebar">
+            <h3>Категорії:</h3>
+            <form method="post" action="/">
+                <button type="submit" name="category" value="">Усі</button>
+                <button type="submit" name="category" value="3d-model">3D</button>
+                <button type="submit" name="category" value="programming">Програми</button>
+                <button type="submit" name="category" value="design">Дизайн</button>
+                <button type="submit" name="category" value="architecture">Архітектура</button>
+            </form>
+        </aside>
 
-    <main class="content">
-        <h2>Каталог проєктів</h2>
-        <div class="projects-grid" id="projectsGrid">
-            {% for project in restaurants %}
-                <div class="project-card" data-category="{{ project.category|lower }}">
-                    <div class="project-image-container">
-                        <img src="{{ project.main_image }}" alt="{{ project.project_name }}">
-                        <div class="project-time">{{ project.created_at|naturaltime }}</div>
+        <main class="content">
+            <h2>Каталог проєктів</h2>
+            <div class="projects-grid" id="projectsGrid">
+                {% for project in restaurants %}
+                    <div class="project-card" data-category="{{ project.category|lower }}">
+                        <div class="project-image-container">
+                            <img src="{{ project.main_image }}" alt="{{ project.project_name }}">
+                            <div class="project-time">{{ project.created_at|naturaltime }}</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-category">{{ project.category }}</div>
+                            <h4>{{ project.project_name }}</h4>
+                            <p class="project-description">{{ project.description }}</p>
+
+
+                            <a href="{{ url_for('restaurant_detail', project_id=project.id) }}" class="view-btn">Дізнатися
+                                більше</a>
+                        </div>
                     </div>
-                    <div class="project-info">
-                        <div class="project-category">{{ project.category }}</div>
-                        <h4>{{ project.project_name }}</h4>
-                        <p class="project-description">{{ project.description }}</p>
-
-
-
-                        <a href="{{ url_for('restaurant_detail', project_id=project.id) }}" class="view-btn">Дізнатися
-                            більше</a>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </main>
-</div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
 {% endblock %}
 <script>
     function filterProjects(category) {
