@@ -214,7 +214,7 @@ async def get_all_likes_for_project(project_id: int, session: AsyncSession = Dep
     return likes
 
 
-@router_projects.delete("/projects/{project_id}", status_code=200)
+@router_projects.delete("/delete/{project_id}")
 async def delete_project_route(
     project_id: int,
     user = Depends(get_current_user),

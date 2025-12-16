@@ -84,7 +84,7 @@ async def create_comment(user_id: int, project_id: int, feedback: str, session: 
     return created_comment
 
 
-async def delete_project(user_id: int, project_id: int, session: AsyncSession) -> Project:
+async def delete_project(user_id: int, project_id: int, session: AsyncSession):
     query = delete(Project).where(
         and_(
             Project.user_id == user_id,

@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse
 
 from backend_api.api import get_current_user_with_token, login_user, get_projects, get_project, get_user_info, \
     get_project_by_category, get_users_info_for_account, edit_users_profile, edit_users_profile_with_avatar, \
-    create_projects, get_user_by_pk, like_project, unlike_project, get_all_likes_for_project
+    create_projects, get_user_by_pk, like_project, unlike_project, get_all_likes_for_project, delete_projects_by_user
 
 import humanize
 from datetime import datetime
@@ -45,9 +45,6 @@ async def index(request: Request,
         context['user'] = user
 
     return templates.TemplateResponse('index.html', context=context)
-
-
-
 
 
 def naturaltime(value):
@@ -464,3 +461,18 @@ async def project_detail_for_user_account(
         "project": project,
         "comments": comments,
     })
+
+
+@router.delete("/projects/delete/{project_id}")
+async def delete_project(
+        project_id: int,
+        request: Request,
+        user_data: dict = Depends(get_current_user_with_token),
+):
+    access_token = user_data.get("access_token") or user_data.get("token")
+
+    if not access_token:
+        return {"success": False, "error": "Token not found"}
+
+    result = await delete_projects_by_user(project_id, access_token)
+    return result
