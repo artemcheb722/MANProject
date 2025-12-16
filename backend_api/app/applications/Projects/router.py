@@ -8,7 +8,7 @@ import uuid
 from sqlalchemy import Text, and_, delete
 from sqlalchemy.orm import joinedload
 from applications.Projects.crud import create_project_in_db, get_project_data, create_comment, \
-    get_project_data, get_project_by_pk
+    get_project_data, get_project_by_pk, delete_project
 from applications.Projects.schemas import ProjectSchema, SearchParamsSchema, CommentResponse, CommentCreate
 from applications.users.models import User
 from sqlalchemy import select
@@ -214,5 +214,11 @@ async def get_all_likes_for_project(project_id: int, session: AsyncSession = Dep
     return likes
 
 
-# @router_projects.delete("/project/delete")
-# async def delete
+@router_projects.delete("/projects/{project_id}", status_code=200)
+async def delete_project_route(
+    project_id: int,
+    user = Depends(get_current_user),
+    session: AsyncSession = Depends(get_async_session)
+):
+    await delete_project(user.id, project_id, session)
+    return {"detail": "Проект видалився успішно"}

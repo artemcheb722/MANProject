@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import asc, desc, select, func, or_, and_
+from sqlalchemy import asc, desc, select, func, or_, and_, delete
 import math
 from sqlalchemy.orm import joinedload
 
@@ -82,3 +82,15 @@ async def create_comment(user_id: int, project_id: int, feedback: str, session: 
     session.add(created_comment)
     await session.commit()
     return created_comment
+
+
+async def delete_project(user_id: int, project_id: int, session: AsyncSession) -> Project:
+    query = delete(Project).where(
+        and_(
+            Project.user_id == user_id,
+            Project.id == project_id
+        )
+    )
+    await session.execute(query)
+    await session.commit()
+    print(query)
